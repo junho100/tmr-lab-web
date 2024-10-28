@@ -13,7 +13,7 @@ import Round2 from "./components/Round2";
 import Round3 from "./components/Round3";
 import PreRound1 from "./components/PreRound1";
 import PreRound2 from "./components/PreRound2";
-
+import PreRound3 from "./components/PreRound3";
 const App = () => {
   return (
     <Router basename={process.env.PUBLIC_URL}>
@@ -33,6 +33,7 @@ const AuthenticatedRoutes = () => {
       <Route path="lab" element={<LabPage />} />
       <Route path="pre-round1" element={<PreRound1 />} />
       <Route path="pre-round2" element={<PreRound2 />} />
+      <Route path="pre-round3" element={<PreRound3 />} />
       <Route path="round1" element={<Round1 />} />
       <Route path="round2" element={<Round2 />} />
       <Route path="round3" element={<Round3 />} />
