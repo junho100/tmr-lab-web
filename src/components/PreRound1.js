@@ -27,19 +27,18 @@ const PreRound1 = () => {
   }, [stage, navigate]);
 
   useEffect(() => {
-    if (stage === "word" && audioCount < 3) {
+    if (stage === "word") {
       const audio = new Audio(
         "https://papago.naver.com/apis/tts/c_lt_clara_2.2.30.0.3.32_164-nvoice_clara_2.2.30.0.3.32_91a33ac6b0a7c4f551f8d6edb2db5039-1727670602445.mp3"
       );
       const playAudio = () => {
         audio.play();
-        setAudioCount((prev) => prev + 1);
       };
 
       const timer = setTimeout(playAudio, 2000);
       return () => clearTimeout(timer);
     }
-  }, [stage, audioCount]);
+  }, [stage]);
 
   return (
     <div
