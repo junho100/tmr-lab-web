@@ -1,123 +1,179 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 // Mock 데이터
 const mockWords = Array(120)
   .fill()
   .map((_, i) => ({
-    korean: `사과${i + 1}`,
-    english: `apple${i + 1}`,
-    audioUrl: `https://papago.naver.com/apis/tts/c_lt_clara_2.2.30.0.3.32_164-nvoice_clara_2.2.30.0.3.32_91a33ac6b0a7c4f551f8d6edb2db5039-1727670602445.mp3`,
+    korean: `한국어${i + 1}`,
+    english: `english${i + 1}`,
+    audioUrl: `${process.env.PUBLIC_URL}/test.mp3`,
   }));
 
 const Round2 = () => {
   const { userId } = useParams();
+  const navigate = useNavigate();
+  const [stage, setStage] = useState("instruction");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [userInput, setUserInput] = useState("");
-  const [showAnswer, setShowAnswer] = useState(false);
-  const [audio] = useState(new Audio());
-  const [playCount, setPlayCount] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
 
+  // 스페이스바 이벤트 핸들러
   useEffect(() => {
-    audio.src = mockWords[currentWordIndex].audioUrl;
-    setPlayCount(0);
-  }, [currentWordIndex, audio]);
-
-  const playAudio = () => {
-    if (playCount < 3) {
-      audio.play();
-      setPlayCount((prevCount) => prevCount + 1);
-    }
-  };
-
-  const checkAnswer = () => {
-    setShowAnswer(true);
-    setTimeout(() => {
-      setShowAnswer(false);
-      if (currentWordIndex < mockWords.length - 1) {
-        setCurrentWordIndex((prevIndex) => prevIndex + 1);
-        setUserInput("");
+    const handleKeyPress = (event) => {
+      if (event.code === "Space") {
+        if (stage === "instruction") {
+          setStage("cross");
+          setTimeout(() => {
+            setStage("question");
+          }, 500);
+        } else if (isCompleted) {
+          navigate(`/${userId}/menu`);
+        }
       }
-    }, 2000);
-  };
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [stage, isCompleted, navigate, userId]);
+
+  // 단어 진행 및 타이밍 제어
+  useEffect(() => {
+    let timer;
+
+    if (stage === "question") {
+      // 오디오 재생
+      const audio = new Audio(mockWords[currentWordIndex].audioUrl);
+      audio.play();
+
+      // 7초 후 정답 표시
+      timer = setTimeout(() => {
+        setStage("answer");
+      }, 7000);
+    } else if (stage === "answer") {
+      // 2초 동안 정답 표시
+      timer = setTimeout(() => {
+        if (currentWordIndex < mockWords.length - 1) {
+          setCurrentWordIndex((prev) => prev + 1);
+          setStage("cross");
+
+          // 0.5초 후 다음 문제
+          setTimeout(() => {
+            setStage("question");
+          }, 500);
+        } else {
+          setStage("completed");
+          setIsCompleted(true);
+        }
+      }, 2000);
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [stage, currentWordIndex]);
 
   const progress = ((currentWordIndex + 1) / mockWords.length) * 100;
 
-  const buttonStyle = {
-    padding: "10px 20px",
-    fontSize: "16px",
-    backgroundColor: "#4CAF50",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    transition: "background-color 0.3s",
-  };
-
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
-      <h1>Round 2</h1>
-      <div style={{ marginBottom: "20px" }}>
-        <div
-          style={{
-            backgroundColor: "#e0e0e0",
-            height: "20px",
-            borderRadius: "10px",
-          }}
-        >
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        padding: "20px",
+      }}
+    >
+      {/* Status Bar - 문제 진행 중일 때만 보이도록 */}
+      {stage !== "instruction" && stage !== "completed" && (
+        <div style={{ marginBottom: "20px" }}>
           <div
             style={{
-              width: `${progress}%`,
-              backgroundColor: "#4CAF50",
-              height: "100%",
+              backgroundColor: "#e0e0e0",
+              height: "20px",
               borderRadius: "10px",
-              transition: "width 0.5s",
             }}
-          />
-        </div>
-        <p>
-          {currentWordIndex + 1} / {mockWords.length}
-        </p>
-      </div>
-      <button
-        onClick={playAudio}
-        style={{
-          ...buttonStyle,
-          backgroundColor: playCount >= 3 ? "#cccccc" : "#4CAF50",
-          cursor: playCount >= 3 ? "not-allowed" : "pointer",
-          marginBottom: "20px",
-        }}
-        disabled={playCount >= 3}
-      >
-        듣기 (남은 횟수: {3 - playCount})
-      </button>
-      <div>
-        <input
-          type="text"
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          placeholder="한국어 단어 입력"
-          style={{ padding: "10px", fontSize: "18px", marginRight: "10px" }}
-        />
-        <button onClick={checkAnswer} style={buttonStyle}>
-          다음
-        </button>
-      </div>
-      {showAnswer && (
-        <div
-          style={{
-            marginTop: "20px",
-            fontSize: "24px",
-            fontWeight: "bold",
-            color:
-              userInput === mockWords[currentWordIndex].korean
-                ? "green"
-                : "red",
-          }}
-        >
-          정답: {mockWords[currentWordIndex].korean}
+          >
+            <div
+              style={{
+                width: `${progress}%`,
+                backgroundColor: "#4CAF50",
+                height: "100%",
+                borderRadius: "10px",
+                transition: "width 0.5s",
+              }}
+            />
+          </div>
+          <p style={{ textAlign: "center" }}>
+            {currentWordIndex + 1} / {mockWords.length}
+          </p>
         </div>
       )}
+
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {stage === "instruction" && (
+          <p style={{ fontSize: "60px", textAlign: "center" }}>
+            지금부터 본 시행을 시작합니다.
+            <br />
+            스페이스바를 눌러주세요.
+          </p>
+        )}
+
+        {stage === "cross" && (
+          <div
+            style={{
+              fontSize: "100px",
+              width: "100px",
+              height: "100px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                width: "100px",
+                height: "25px",
+                backgroundColor: "black",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                width: "25px",
+                height: "100px",
+                backgroundColor: "black",
+              }}
+            />
+          </div>
+        )}
+
+        {stage === "question" && <div style={{ fontSize: "100px" }}>?</div>}
+
+        {stage === "answer" && (
+          <div style={{ fontSize: "100px" }}>
+            {mockWords[currentWordIndex].korean}
+          </div>
+        )}
+
+        {stage === "completed" && (
+          <p style={{ fontSize: "60px", textAlign: "center" }}>
+            실험이 완료되었습니다.
+            <br />
+            스페이스바를 눌러 메뉴로 돌아가세요.
+          </p>
+        )}
+      </div>
     </div>
   );
 };
