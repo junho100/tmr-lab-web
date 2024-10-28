@@ -12,6 +12,7 @@ import Round1 from "./components/Round1";
 import Round2 from "./components/Round2";
 import Round3 from "./components/Round3";
 import PreRound1 from "./components/PreRound1";
+import PreRound2 from "./components/PreRound2";
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const AuthenticatedRoutes = () => {
       <Route path="menu" element={<ExperimentMenu />} />
       <Route path="lab" element={<LabPage />} />
       <Route path="pre-round1" element={<PreRound1 />} />
+      <Route path="pre-round2" element={<PreRound2 />} />
       <Route path="round1" element={<Round1 />} />
       <Route path="round2" element={<Round2 />} />
       <Route path="round3" element={<Round3 />} />
