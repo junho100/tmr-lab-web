@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/tmr-lab-web/static/css/main.96b47367.css",
-    "main.js": "/tmr-lab-web/static/js/main.705b8715.js",
+    "main.js": "/tmr-lab-web/static/js/main.043f93b5.js",
     "static/js/453.890a544b.chunk.js": "/tmr-lab-web/static/js/453.890a544b.chunk.js",
     "index.html": "/tmr-lab-web/index.html",
     "main.96b47367.css.map": "/tmr-lab-web/static/css/main.96b47367.css.map",
-    "main.705b8715.js.map": "/tmr-lab-web/static/js/main.705b8715.js.map",
+    "main.043f93b5.js.map": "/tmr-lab-web/static/js/main.043f93b5.js.map",
     "453.890a544b.chunk.js.map": "/tmr-lab-web/static/js/453.890a544b.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.96b47367.css",
-    "static/js/main.705b8715.js"
+    "static/js/main.043f93b5.js"
   ]
 }
