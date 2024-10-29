@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 // Mock 데이터
 const mockWords = Array(120)
@@ -11,93 +11,158 @@ const mockWords = Array(120)
   }));
 
 const Round3 = () => {
-  // eslint-disable-next-line no-unused-vars
   const { userId } = useParams();
+  const navigate = useNavigate();
+  const [stage, setStage] = useState("instruction");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [userInput, setUserInput] = useState("");
-  const [audio] = useState(new Audio());
-  const [playCount, setPlayCount] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
 
+  // 스페이스바 이벤트 핸들러는 동일
   useEffect(() => {
-    audio.src = mockWords[currentWordIndex].audioUrl;
-    setPlayCount(0);
-  }, [currentWordIndex, audio]);
+    const handleKeyPress = (event) => {
+      if (event.code === "Space") {
+        if (stage === "instruction") {
+          setStage("cross");
+          setTimeout(() => {
+            setStage("question");
+          }, 500);
+        } else if (isCompleted) {
+          navigate(`/${userId}/menu`);
+        }
+      }
+    };
 
-  const playAudio = () => {
-    if (playCount < 3) {
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [stage, isCompleted, navigate, userId]);
+
+  // 단어 진행 및 타이밍 제어 수정
+  useEffect(() => {
+    let timer;
+
+    if (stage === "question") {
+      // 오디오 재생
+      const audio = new Audio(mockWords[currentWordIndex].audioUrl);
       audio.play();
-      setPlayCount((prevCount) => prevCount + 1);
-    }
-  };
 
-  const nextWord = () => {
-    if (currentWordIndex < mockWords.length - 1) {
-      setCurrentWordIndex((prevIndex) => prevIndex + 1);
-      setUserInput("");
+      // 7초 후 다음 단어로
+      timer = setTimeout(() => {
+        if (currentWordIndex < mockWords.length - 1) {
+          setCurrentWordIndex((prev) => prev + 1);
+          setStage("cross");
+
+          // 0.5초 후 다음 문제
+          setTimeout(() => {
+            setStage("question");
+          }, 500);
+        } else {
+          setStage("completed");
+          setIsCompleted(true);
+        }
+      }, 7000);
     }
-  };
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [stage, currentWordIndex]);
 
   const progress = ((currentWordIndex + 1) / mockWords.length) * 100;
 
-  const buttonStyle = {
-    padding: "10px 20px",
-    fontSize: "16px",
-    backgroundColor: "#4CAF50",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    transition: "background-color 0.3s",
-  };
-
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
-      <h1>Round 3</h1>
-      <div style={{ marginBottom: "20px" }}>
-        <div
-          style={{
-            backgroundColor: "#e0e0e0",
-            height: "20px",
-            borderRadius: "10px",
-          }}
-        >
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        padding: "20px",
+      }}
+    >
+      {/* Status Bar - 기존과 동일 */}
+      {stage !== "instruction" && stage !== "completed" && (
+        <div style={{ marginBottom: "20px" }}>
           <div
             style={{
-              width: `${progress}%`,
-              backgroundColor: "#4CAF50",
-              height: "100%",
+              backgroundColor: "#e0e0e0",
+              height: "20px",
               borderRadius: "10px",
-              transition: "width 0.5s",
             }}
-          />
+          >
+            <div
+              style={{
+                width: `${progress}%`,
+                backgroundColor: "#4CAF50",
+                height: "100%",
+                borderRadius: "10px",
+                transition: "width 0.5s",
+              }}
+            />
+          </div>
+          <p style={{ textAlign: "center" }}>
+            {currentWordIndex + 1} / {mockWords.length}
+          </p>
         </div>
-        <p>
-          {currentWordIndex + 1} / {mockWords.length}
-        </p>
-      </div>
-      <button
-        onClick={playAudio}
+      )}
+
+      <div
         style={{
-          ...buttonStyle,
-          backgroundColor: playCount >= 3 ? "#cccccc" : "#4CAF50",
-          cursor: playCount >= 3 ? "not-allowed" : "pointer",
-          marginBottom: "20px",
+          flex: 1,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
-        disabled={playCount >= 3}
       >
-        듣기 (남은 횟수: {3 - playCount})
-      </button>
-      <div>
-        <input
-          type="text"
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          placeholder="한국어 단어 입력"
-          style={{ padding: "10px", fontSize: "18px", marginRight: "10px" }}
-        />
-        <button onClick={nextWord} style={buttonStyle}>
-          다음
-        </button>
+        {/* instruction, cross, question, completed 스테이지는 동일하게 유지 */}
+        {stage === "instruction" && (
+          <p style={{ fontSize: "60px", textAlign: "center" }}>
+            지금부터 본 시행을 시작합니다.
+            <br />
+            스페이스바를 눌러주세요.
+          </p>
+        )}
+
+        {stage === "cross" && (
+          <div
+            style={{
+              fontSize: "100px",
+              width: "100px",
+              height: "100px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                width: "100px",
+                height: "25px",
+                backgroundColor: "black",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                width: "25px",
+                height: "100px",
+                backgroundColor: "black",
+              }}
+            />
+          </div>
+        )}
+
+        {stage === "question" && <div style={{ fontSize: "100px" }}>?</div>}
+
+        {stage === "completed" && (
+          <p style={{ fontSize: "60px", textAlign: "center" }}>
+            실험이 완료되었습니다.
+            <br />
+            스페이스바를 눌러 메뉴로 돌아가세요.
+          </p>
+        )}
       </div>
     </div>
   );
