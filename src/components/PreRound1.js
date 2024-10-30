@@ -35,7 +35,7 @@ const PreRound1 = () => {
         audio.play();
       };
 
-      const timer = setTimeout(playAudio, 2000);
+      const timer = setTimeout(playAudio, 0);
       return () => clearTimeout(timer);
     }
   }, [stage]);
