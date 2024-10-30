@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import { mockWords } from "./Test"; // Test.js에서 mockWords를 export 해야 합니다
 
 const Container = styled.div`
   display: flex;
@@ -50,6 +51,7 @@ const LabPage = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [threshold, setThreshold] = useState(20);
   const [breathState, setBreathState] = useState("ready");
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
 
   // 필요한 ref을 정의
   const audioContextRef = useRef(null);
@@ -136,12 +138,22 @@ const LabPage = () => {
       quietDurationRef.current = 0;
       loudDurationRef.current = 0;
 
-      if (newState !== "between") {
+      if (newState === "between") {
+        // between 상태에서 음성 재생
+        if (!hasPlayedAudioRef.current && audioElement.current) {
+          audioElement.current.src = mockWords[currentWordIndex].audioUrl;
+          audioElement.current.play();
+          hasPlayedAudioRef.current = true;
+
+          // 다음 단어 인덱스로 업데이트
+          setCurrentWordIndex((prev) => (prev + 1) % mockWords.length);
+        }
+      } else {
         longQuietDurationRef.current = 0;
         hasPlayedAudioRef.current = false;
       }
     },
-    [breathState]
+    [breathState, currentWordIndex]
   );
 
   const startRecording = async () => {
@@ -252,9 +264,7 @@ const LabPage = () => {
 
   // 오디오 객체 초기화를 컴포넌트 마운트 시 한 번만 수행
   useEffect(() => {
-    audioElement.current = new Audio("/test.mp3"); // public 폴더의 test.mp3 사용
-
-    // 오디오 로드 확인
+    audioElement.current = new Audio();
     audioElement.current.addEventListener("loadeddata", () => {
       console.log("오디오 로드 완료");
     });
