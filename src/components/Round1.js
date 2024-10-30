@@ -44,7 +44,7 @@ const Round1 = () => {
       setStage("cross");
       setTimeout(() => {
         setStage("word");
-      }, 500);
+      }, 1500);
     }
   };
 
@@ -60,7 +60,7 @@ const Round1 = () => {
 
           setTimeout(() => {
             setStage("word");
-          }, 500);
+          }, 1500);
         } else {
           // 마지막 단어가 끝나면 완료 상태로 변경
           setStage("completed");

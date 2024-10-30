@@ -13,7 +13,7 @@ const PreRound1 = () => {
           setStage("cross");
           setTimeout(() => {
             setStage("word");
-          }, 500);
+          }, 1500);
         } else if (stage === "word") {
           navigate("/test/menu");
         }
