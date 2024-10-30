@@ -1,14 +1,408 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-// Mock 데이터 - 80개로 변경
-const mockWords = Array(80)
-  .fill()
-  .map((_, i) => ({
-    korean: `사과${i + 1}`,
-    english: `apple${i + 1}`,
-    audioUrl: `https://papago.naver.com/apis/tts/c_lt_clara_2.2.30.0.3.32_164-nvoice_clara_2.2.30.0.3.32_91a33ac6b0a7c4f551f8d6edb2db5039-1727670602445.mp3`,
-  }));
+const mockWords = [
+  {
+    korean: "아치",
+    english: "arch",
+    audioUrl: `${process.env.PUBLIC_URL}/arch.mp3`,
+  },
+  {
+    korean: "배지",
+    english: "badge",
+    audioUrl: `${process.env.PUBLIC_URL}/badge.mp3`,
+  },
+  {
+    korean: "가방",
+    english: "bag",
+    audioUrl: `${process.env.PUBLIC_URL}/bag.mp3`,
+  },
+  {
+    korean: "바구니",
+    english: "basket",
+    audioUrl: `${process.env.PUBLIC_URL}/basket.mp3`,
+  },
+  {
+    korean: "빔",
+    english: "beam",
+    audioUrl: `${process.env.PUBLIC_URL}/beam.mp3`,
+  },
+  {
+    korean: "침대",
+    english: "bed",
+    audioUrl: `${process.env.PUBLIC_URL}/bed.mp3`,
+  },
+  {
+    korean: "벨트",
+    english: "belt",
+    audioUrl: `${process.env.PUBLIC_URL}/belt.mp3`,
+  },
+  {
+    korean: "지폐",
+    english: "bill",
+    audioUrl: `${process.env.PUBLIC_URL}/bill.mp3`,
+  },
+  {
+    korean: "새",
+    english: "bird",
+    audioUrl: `${process.env.PUBLIC_URL}/bird.mp3`,
+  },
+  {
+    korean: "담요",
+    english: "blanket",
+    audioUrl: `${process.env.PUBLIC_URL}/blanket.mp3`,
+  },
+  {
+    korean: "판",
+    english: "board",
+    audioUrl: `${process.env.PUBLIC_URL}/board.mp3`,
+  },
+  {
+    korean: "책",
+    english: "book",
+    audioUrl: `${process.env.PUBLIC_URL}/book.mp3`,
+  },
+  {
+    korean: "병",
+    english: "bottle",
+    audioUrl: `${process.env.PUBLIC_URL}/bottle.mp3`,
+  },
+  {
+    korean: "그릇",
+    english: "bowl",
+    audioUrl: `${process.env.PUBLIC_URL}/bowl.mp3`,
+  },
+  {
+    korean: "상자",
+    english: "box",
+    audioUrl: `${process.env.PUBLIC_URL}/box.mp3`,
+  },
+  {
+    korean: "벽돌",
+    english: "brick",
+    audioUrl: `${process.env.PUBLIC_URL}/brick.mp3`,
+  },
+  {
+    korean: "브러시",
+    english: "brush",
+    audioUrl: `${process.env.PUBLIC_URL}/brush.mp3`,
+  },
+  {
+    korean: "양동이",
+    english: "bucket",
+    audioUrl: `${process.env.PUBLIC_URL}/bucket.mp3`,
+  },
+  {
+    korean: "버튼",
+    english: "button",
+    audioUrl: `${process.env.PUBLIC_URL}/button.mp3`,
+  },
+  {
+    korean: "캔",
+    english: "can",
+    audioUrl: `${process.env.PUBLIC_URL}/can.mp3`,
+  },
+  {
+    korean: "카드",
+    english: "card",
+    audioUrl: `${process.env.PUBLIC_URL}/card.mp3`,
+  },
+  {
+    korean: "케이스",
+    english: "case",
+    audioUrl: `${process.env.PUBLIC_URL}/case.mp3`,
+  },
+  {
+    korean: "고양이",
+    english: "cat",
+    audioUrl: `${process.env.PUBLIC_URL}/cat.mp3`,
+  },
+  {
+    korean: "세라믹",
+    english: "ceramic",
+    audioUrl: `${process.env.PUBLIC_URL}/ceramic.mp3`,
+  },
+  {
+    korean: "의자",
+    english: "chair",
+    audioUrl: `${process.env.PUBLIC_URL}/chair.mp3`,
+  },
+  {
+    korean: "시계",
+    english: "clock",
+    audioUrl: `${process.env.PUBLIC_URL}/clock.mp3`,
+  },
+  {
+    korean: "코일",
+    english: "coil",
+    audioUrl: `${process.env.PUBLIC_URL}/coil.mp3`,
+  },
+  {
+    korean: "동전",
+    english: "coin",
+    audioUrl: `${process.env.PUBLIC_URL}/coin.mp3`,
+  },
+  {
+    korean: "상업의",
+    english: "commercial",
+    audioUrl: `${process.env.PUBLIC_URL}/commercial.mp3`,
+  },
+  {
+    korean: "나침반",
+    english: "compass",
+    audioUrl: `${process.env.PUBLIC_URL}/compass.mp3`,
+  },
+  {
+    korean: "세제곱",
+    english: "cubed",
+    audioUrl: `${process.env.PUBLIC_URL}/cubed.mp3`,
+  },
+  {
+    korean: "컵",
+    english: "cup",
+    audioUrl: `${process.env.PUBLIC_URL}/cup.mp3`,
+  },
+  {
+    korean: "감속",
+    english: "decelerate",
+    audioUrl: `${process.env.PUBLIC_URL}/decelerate.mp3`,
+  },
+  {
+    korean: "책상",
+    english: "desk",
+    audioUrl: `${process.env.PUBLIC_URL}/desk.mp3`,
+  },
+  {
+    korean: "디젤",
+    english: "diesel",
+    audioUrl: `${process.env.PUBLIC_URL}/diesel.mp3`,
+  },
+  {
+    korean: "규율",
+    english: "discipline",
+    audioUrl: `${process.env.PUBLIC_URL}/discipline.mp3`,
+  },
+  {
+    korean: "개",
+    english: "dog",
+    audioUrl: `${process.env.PUBLIC_URL}/dog.mp3`,
+  },
+  {
+    korean: "문",
+    english: "door",
+    audioUrl: `${process.env.PUBLIC_URL}/door.mp3`,
+  },
+  {
+    korean: "지수",
+    english: "exponent",
+    audioUrl: `${process.env.PUBLIC_URL}/exponent.mp3`,
+  },
+  {
+    korean: "물고기",
+    english: "fish",
+    audioUrl: `${process.env.PUBLIC_URL}/fish.mp3`,
+  },
+  {
+    korean: "깃발",
+    english: "flag",
+    audioUrl: `${process.env.PUBLIC_URL}/flag.mp3`,
+  },
+  {
+    korean: "플라스크",
+    english: "flask",
+    audioUrl: `${process.env.PUBLIC_URL}/flask.mp3`,
+  },
+  {
+    korean: "꽃",
+    english: "flower",
+    audioUrl: `${process.env.PUBLIC_URL}/flower.mp3`,
+  },
+  {
+    korean: "포크",
+    english: "fork",
+    audioUrl: `${process.env.PUBLIC_URL}/fork.mp3`,
+  },
+  {
+    korean: "프레임",
+    english: "frame",
+    audioUrl: `${process.env.PUBLIC_URL}/frame.mp3`,
+  },
+  {
+    korean: "갤런",
+    english: "gallon",
+    audioUrl: `${process.env.PUBLIC_URL}/gallon.mp3`,
+  },
+  {
+    korean: "기어",
+    english: "gear",
+    audioUrl: `${process.env.PUBLIC_URL}/gear.mp3`,
+  },
+  {
+    korean: "손잡이",
+    english: "handle",
+    audioUrl: `${process.env.PUBLIC_URL}/handle.mp3`,
+  },
+  {
+    korean: "경첩",
+    english: "hinge",
+    audioUrl: `${process.env.PUBLIC_URL}/hinge.mp3`,
+  },
+  {
+    korean: "고리",
+    english: "hook",
+    audioUrl: `${process.env.PUBLIC_URL}/hook.mp3`,
+  },
+  {
+    korean: "말",
+    english: "horse",
+    audioUrl: `${process.env.PUBLIC_URL}/horse.mp3`,
+  },
+  {
+    korean: "집",
+    english: "house",
+    audioUrl: `${process.env.PUBLIC_URL}/house.mp3`,
+  },
+  {
+    korean: "항아리",
+    english: "jar",
+    audioUrl: `${process.env.PUBLIC_URL}/jar.mp3`,
+  },
+  {
+    korean: "열쇠",
+    english: "key",
+    audioUrl: `${process.env.PUBLIC_URL}/key.mp3`,
+  },
+  {
+    korean: "키보드",
+    english: "keyboard",
+    audioUrl: `${process.env.PUBLIC_URL}/keyboard.mp3`,
+  },
+  {
+    korean: "칼",
+    english: "knife",
+    audioUrl: `${process.env.PUBLIC_URL}/knife.mp3`,
+  },
+  {
+    korean: "램프",
+    english: "lamp",
+    audioUrl: `${process.env.PUBLIC_URL}/lamp.mp3`,
+  },
+  {
+    korean: "잎",
+    english: "leaf",
+    audioUrl: `${process.env.PUBLIC_URL}/leaf.mp3`,
+  },
+  {
+    korean: "편지",
+    english: "letter",
+    audioUrl: `${process.env.PUBLIC_URL}/letter.mp3`,
+  },
+  {
+    korean: "지렛대",
+    english: "leverage",
+    audioUrl: `${process.env.PUBLIC_URL}/leverage.mp3`,
+  },
+  {
+    korean: "빛",
+    english: "light",
+    audioUrl: `${process.env.PUBLIC_URL}/light.mp3`,
+  },
+  {
+    korean: "연결",
+    english: "link",
+    audioUrl: `${process.env.PUBLIC_URL}/link.mp3`,
+  },
+  {
+    korean: "자물쇠",
+    english: "lock",
+    audioUrl: `${process.env.PUBLIC_URL}/lock.mp3`,
+  },
+  {
+    korean: "목재",
+    english: "lumber",
+    audioUrl: `${process.env.PUBLIC_URL}/lumber.mp3`,
+  },
+  {
+    korean: "자석",
+    english: "magnet",
+    audioUrl: `${process.env.PUBLIC_URL}/magnet.mp3`,
+  },
+  {
+    korean: "지도",
+    english: "map",
+    audioUrl: `${process.env.PUBLIC_URL}/map.mp3`,
+  },
+  {
+    korean: "메달",
+    english: "medal",
+    audioUrl: `${process.env.PUBLIC_URL}/medal.mp3`,
+  },
+  {
+    korean: "거울",
+    english: "mirror",
+    audioUrl: `${process.env.PUBLIC_URL}/mirror.mp3`,
+  },
+  {
+    korean: "마우스",
+    english: "mouse",
+    audioUrl: `${process.env.PUBLIC_URL}/mouse.mp3`,
+  },
+  {
+    korean: "시립의",
+    english: "municipal",
+    audioUrl: `${process.env.PUBLIC_URL}/municipal.mp3`,
+  },
+  {
+    korean: "못",
+    english: "nail",
+    audioUrl: `${process.env.PUBLIC_URL}/nail.mp3`,
+  },
+  {
+    korean: "타원",
+    english: "oval",
+    audioUrl: `${process.env.PUBLIC_URL}/oval.mp3`,
+  },
+  {
+    korean: "종이",
+    english: "paper",
+    audioUrl: `${process.env.PUBLIC_URL}/paper.mp3`,
+  },
+  {
+    korean: "연필",
+    english: "pencil",
+    audioUrl: `${process.env.PUBLIC_URL}/pencil.mp3`,
+  },
+  {
+    korean: "석유",
+    english: "petroleum",
+    audioUrl: `${process.env.PUBLIC_URL}/petroleum.mp3`,
+  },
+  {
+    korean: "전화",
+    english: "phone",
+    audioUrl: `${process.env.PUBLIC_URL}/phone.mp3`,
+  },
+  {
+    korean: "사진",
+    english: "picture",
+    audioUrl: `${process.env.PUBLIC_URL}/picture.mp3`,
+  },
+  {
+    korean: "베개",
+    english: "pillow",
+    audioUrl: `${process.env.PUBLIC_URL}/pillow.mp3`,
+  },
+  {
+    korean: "접시",
+    english: "plate",
+    audioUrl: `${process.env.PUBLIC_URL}/plate.mp3`,
+  },
+  {
+    korean: "펜치",
+    english: "plier",
+    audioUrl: `${process.env.PUBLIC_URL}/plier.mp3`,
+  },
+];
 
 const PreTest = () => {
   const { userId } = useParams();
