@@ -410,6 +410,7 @@ const PreTest = () => {
   const [stage, setStage] = useState("instruction");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [countdown, setCountdown] = useState(7);
 
   // 스페이스바 이벤트 핸들러는 동일
   useEffect(() => {
@@ -435,13 +436,21 @@ const PreTest = () => {
   // 단어 진행 및 타이밍 제어 수정
   useEffect(() => {
     let timer;
+    let countdownTimer;
 
     if (stage === "question") {
       // 오디오 재생
       const audio = new Audio(mockWords[currentWordIndex].audioUrl);
       audio.play();
 
-      // 7초 후 다음 단어로
+      setCountdown(7);
+
+      // 카운트다운 타이머
+      countdownTimer = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+
+      // 7초 다음 단어로
       timer = setTimeout(() => {
         if (currentWordIndex < mockWords.length - 1) {
           setCurrentWordIndex((prev) => prev + 1);
@@ -460,6 +469,7 @@ const PreTest = () => {
 
     return () => {
       if (timer) clearTimeout(timer);
+      if (countdownTimer) clearInterval(countdownTimer);
     };
   }, [stage, currentWordIndex]);
 
@@ -548,7 +558,19 @@ const PreTest = () => {
           </div>
         )}
 
-        {stage === "question" && <div style={{ fontSize: "100px" }}>?</div>}
+        {stage === "question" && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "20px",
+            }}
+          >
+            <div style={{ fontSize: "100px" }}>?</div>
+            <div style={{ fontSize: "40px" }}>남은시간 : {countdown}초</div>
+          </div>
+        )}
 
         {stage === "completed" && (
           <p style={{ fontSize: "60px", textAlign: "center" }}>
