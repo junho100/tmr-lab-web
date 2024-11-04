@@ -214,6 +214,8 @@ const LabPage = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     let animationFrameId;
+    let lastApiCallTime = 0;
+    const API_CALL_INTERVAL = 10; // 10ms 간격 (1초에 100번)
 
     const sendBreathingData = async (average) => {
       try {
@@ -249,8 +251,12 @@ const LabPage = () => {
         dataArrayRef.current.length;
       const roundedAverage = Math.round(average);
 
-      // API 요청 보내기 (roundedAverage 사용)
-      sendBreathingData(roundedAverage);
+      // API 요청 주기 제어
+      const currentTime = Date.now();
+      if (currentTime - lastApiCallTime >= API_CALL_INTERVAL) {
+        sendBreathingData(roundedAverage);
+        lastApiCallTime = currentTime;
+      }
 
       // 캔버스 초기화
       ctx.fillStyle = "rgb(200, 200, 200)";
