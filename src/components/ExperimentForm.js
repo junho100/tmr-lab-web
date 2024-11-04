@@ -32,15 +32,36 @@ const ExperimentForm = ({ onLogin }) => {
     setIsSubmitting(true);
     setSubmitResult(null);
 
-    try {
-      // API 호출 대신 임시로 성공 처리
+    // 필수값 체크
+    if (!age || !englishLevel || !specialNotes) {
       setSubmitResult({
-        status: "success",
-        message: uniqueId
-          ? "데이터가 성공적으로 업데이트되었습니다."
-          : "새 사용자가 등록되었습니다.",
+        status: "error",
+        message: "모든 필드를 입력해주세요.",
       });
-      onLogin(uniqueId || "new-user");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/api/subjects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          age: parseInt(age),
+          english_level: englishLevel,
+          detail: specialNotes,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      alert(`고유 아이디는 ${data.id_for_login}입니다.`);
+      onLogin(data.id_for_login);
     } catch (error) {
       setSubmitResult({
         status: "error",
@@ -142,7 +163,7 @@ const ExperimentForm = ({ onLogin }) => {
             htmlFor="age"
             style={{ display: "block", marginBottom: "0.25rem" }}
           >
-            연령
+            연령 <span style={{ color: "red" }}>*</span>
           </label>
           <input
             type="number"
@@ -158,7 +179,7 @@ const ExperimentForm = ({ onLogin }) => {
             htmlFor="englishLevel"
             style={{ display: "block", marginBottom: "0.25rem" }}
           >
-            영어 수준
+            영어 수준 <span style={{ color: "red" }}>*</span>
           </label>
           <select
             id="englishLevel"
@@ -182,7 +203,7 @@ const ExperimentForm = ({ onLogin }) => {
             htmlFor="specialNotes"
             style={{ display: "block", marginBottom: "0.25rem" }}
           >
-            특이사항
+            특이사항 <span style={{ color: "red" }}>*</span>
           </label>
           <textarea
             id="specialNotes"
