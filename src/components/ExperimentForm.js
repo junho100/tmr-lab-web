@@ -14,9 +14,34 @@ const ExperimentForm = ({ onLogin }) => {
 
     setIsSubmitting(true);
     try {
-      // API 호출 대신 임시로 성공 처리
-      setSubmitResult({ status: "success", message: "로그인 성공" });
-      onLogin(uniqueId);
+      const response = await fetch(
+        `http://localhost:8080/api/subjects/check?id=${encodeURIComponent(
+          uniqueId
+        )}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.is_exists) {
+        setSubmitResult({ status: "success", message: "로그인 성공" });
+        onLogin(uniqueId);
+      } else {
+        alert("존재하지 않는 사용자입니다.");
+        setSubmitResult({
+          status: "error",
+          message: "존재하지 않는 사용자입니다.",
+        });
+      }
     } catch (error) {
       setSubmitResult({
         status: "error",
