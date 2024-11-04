@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "env-cmd": "^10.1.0",
     "gh-pages": "^6.2.0",
     "lucide-react": "^0.446.0",
     "react": "^18.3.1",
@@ -18,11 +19,11 @@
   },
   "homepage": "https://junho100.github.io/tmr-lab-web",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "env-cmd -f .env.local react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
+    "predeploy": "CI=false env-cmd -f .env.production react-scripts build",
     "deploy": "shx cp build/index.html build/404.html && gh-pages -d build"
   },
   "eslintConfig": {

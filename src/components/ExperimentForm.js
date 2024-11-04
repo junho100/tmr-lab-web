@@ -14,10 +14,13 @@ const ExperimentForm = ({ onLogin }) => {
 
     setIsSubmitting(true);
     try {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      if (!apiUrl) {
+        throw new Error("API URL이 설정되지 않았습니다");
+      }
+
       const response = await fetch(
-        `http://localhost:8080/api/subjects/check?id=${encodeURIComponent(
-          uniqueId
-        )}`,
+        `${apiUrl}/api/subjects/check?id=${encodeURIComponent(uniqueId)}`,
         {
           method: "GET",
           headers: {
@@ -68,7 +71,12 @@ const ExperimentForm = ({ onLogin }) => {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/subjects", {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      if (!apiUrl) {
+        throw new Error("API URL이 설정되지 않았습니다");
+      }
+
+      const response = await fetch(`${apiUrl}/api/subjects`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
