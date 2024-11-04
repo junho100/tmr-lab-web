@@ -47,6 +47,7 @@ const SliderContainer = styled.div`
 `;
 
 const LabPage = () => {
+  const { id_for_login } = useParams();
   const canvasRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
   const [threshold, setThreshold] = useState(20);
@@ -214,12 +215,42 @@ const LabPage = () => {
     const ctx = canvas.getContext("2d");
     let animationFrameId;
 
+    const sendBreathingData = async (average) => {
+      try {
+        const apiUrl = process.env.REACT_APP_API_URL;
+        if (!apiUrl) {
+          throw new Error("API URL이 설정되지 않았습니다");
+        }
+
+        const response = await fetch(`${apiUrl}/api/labs/breathing`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_for_login,
+            average_volume: average,
+            timestamp: new Date().toISOString(),
+          }),
+        });
+
+        if (!response.ok) {
+          console.error("호흡 데이터 전송 실패:", response.status);
+        }
+      } catch (error) {
+        console.error("호흡 데이터 전송 중 오류:", error);
+      }
+    };
+
     const draw = () => {
       analyserRef.current.getByteFrequencyData(dataArrayRef.current);
       const average =
         dataArrayRef.current.reduce((acc, val) => acc + val, 0) /
         dataArrayRef.current.length;
       const roundedAverage = Math.round(average);
+
+      // API 요청 보내기 (roundedAverage 사용)
+      sendBreathingData(roundedAverage);
 
       // 캔버스 초기화
       ctx.fillStyle = "rgb(200, 200, 200)";
@@ -260,7 +291,7 @@ const LabPage = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [isRecording, updateBreathState]);
+  }, [isRecording, updateBreathState, id_for_login]);
 
   // 오디오 객체 초기화를 컴포넌트 마운트 시 한 번만 수행
   useEffect(() => {
