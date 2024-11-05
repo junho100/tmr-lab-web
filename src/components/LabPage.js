@@ -215,7 +215,7 @@ const LabPage = () => {
     const ctx = canvas.getContext("2d");
     let animationFrameId;
     let lastApiCallTime = 0;
-    const API_CALL_INTERVAL = 10; // 10ms 간격 (1초에 100번)
+    const API_CALL_INTERVAL = 100; // 100ms 간격 (1초에 10번)
 
     const sendBreathingData = async (average) => {
       try {
