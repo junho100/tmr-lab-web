@@ -140,11 +140,36 @@ const LabPage = () => {
       loudDurationRef.current = 0;
 
       if (newState === "between") {
-        // between 상태에서 음성 재생
+        // between 상태에서 음성 재생 및 API 호출
         if (!hasPlayedAudioRef.current && audioElement.current) {
-          audioElement.current.src = mockWords[currentWordIndex].audioUrl;
+          const currentWord = mockWords[currentWordIndex];
+          audioElement.current.src = currentWord.audioUrl;
           audioElement.current.play();
           hasPlayedAudioRef.current = true;
+
+          // 사운드 큐 API 호출 - english 속성 사용
+          const apiUrl = process.env.REACT_APP_API_URL;
+          if (apiUrl) {
+            fetch(`${apiUrl}/api/labs/cue`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                id_for_login,
+                target_word: currentWord.english,
+                timestamp: new Date().toISOString(),
+              }),
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  console.error("사운드 큐 데이터 전송 실패:", response.status);
+                }
+              })
+              .catch((error) => {
+                console.error("사운드 큐 데이터 전송 중 오류:", error);
+              });
+          }
 
           // 다음 단어 인덱스로 업데이트
           setCurrentWordIndex((prev) => (prev + 1) % mockWords.length);
@@ -154,7 +179,7 @@ const LabPage = () => {
         hasPlayedAudioRef.current = false;
       }
     },
-    [breathState, currentWordIndex]
+    [breathState, currentWordIndex, id_for_login]
   );
 
   const startRecording = async () => {
