@@ -49,7 +49,7 @@ const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/bird.mp3`,
   },
   {
-    korean: "담요",
+    korean: "담���",
     english: "blanket",
     audioUrl: `${process.env.PUBLIC_URL}/blanket.mp3`,
   },
@@ -612,6 +612,7 @@ const Round1 = () => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [audio] = useState(new Audio());
   const [isCompleted, setIsCompleted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(5); // 5초 타이머 추가
 
   // playAudio 함수 개선
   const playAudio = async () => {
@@ -643,12 +644,24 @@ const Round1 = () => {
     }
   };
 
-  // 자동 단어 전환을 위한 useEffect 수정
+  // 타이머 로직 추가
   useEffect(() => {
     let timer;
 
     if (stage === "word") {
-      timer = setTimeout(() => {
+      setTimeLeft(5); // 단어가 보일 때마다 5초로 초기화
+
+      timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      const wordTimer = setTimeout(() => {
         if (currentWordIndex < mockWords.length - 1) {
           setStage("cross");
           setCurrentWordIndex((prev) => prev + 1);
@@ -657,16 +670,16 @@ const Round1 = () => {
             setStage("word");
           }, 500);
         } else {
-          // 마지막 단어가 끝나면 완료 상태로 변경
           setStage("completed");
           setIsCompleted(true);
         }
       }, 5000);
-    }
 
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
+      return () => {
+        clearInterval(timer);
+        clearTimeout(wordTimer);
+      };
+    }
   }, [stage, currentWordIndex]);
 
   // 스페이스바 이벤트 핸들러 수정
@@ -794,9 +807,12 @@ const Round1 = () => {
         )}
 
         {stage === "word" && (
-          <p style={{ fontSize: "100px" }}>
-            {mockWords[currentWordIndex].korean}
-          </p>
+          <div style={{ textAlign: "center" }}>
+            <p style={{ fontSize: "100px", marginBottom: "20px" }}>
+              {mockWords[currentWordIndex].korean}
+            </p>
+            <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
+          </div>
         )}
       </div>
     </div>

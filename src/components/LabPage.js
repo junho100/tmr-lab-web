@@ -47,6 +47,7 @@ const SliderContainer = styled.div`
 `;
 
 const LabPage = () => {
+  const { id_for_login } = useParams();
   const canvasRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
   const [threshold, setThreshold] = useState(20);
@@ -139,11 +140,36 @@ const LabPage = () => {
       loudDurationRef.current = 0;
 
       if (newState === "between") {
-        // between 상태에서 음성 재생
+        // between 상태에서 음성 재생 및 API 호출
         if (!hasPlayedAudioRef.current && audioElement.current) {
-          audioElement.current.src = mockWords[currentWordIndex].audioUrl;
+          const currentWord = mockWords[currentWordIndex];
+          audioElement.current.src = currentWord.audioUrl;
           audioElement.current.play();
           hasPlayedAudioRef.current = true;
+
+          // 사운드 큐 API 호출 - english 속성 사용
+          const apiUrl = process.env.REACT_APP_API_URL;
+          if (apiUrl) {
+            fetch(`${apiUrl}/api/labs/cue`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                id_for_login,
+                target_word: currentWord.english,
+                timestamp: new Date().toISOString(),
+              }),
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  console.error("사운드 큐 데이터 전송 실패:", response.status);
+                }
+              })
+              .catch((error) => {
+                console.error("사운드 큐 데이터 전송 중 오류:", error);
+              });
+          }
 
           // 다음 단어 인덱스로 업데이트
           setCurrentWordIndex((prev) => (prev + 1) % mockWords.length);
@@ -153,7 +179,7 @@ const LabPage = () => {
         hasPlayedAudioRef.current = false;
       }
     },
-    [breathState, currentWordIndex]
+    [breathState, currentWordIndex, id_for_login]
   );
 
   const startRecording = async () => {
@@ -213,6 +239,35 @@ const LabPage = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     let animationFrameId;
+    let lastApiCallTime = 0;
+    const API_CALL_INTERVAL = 100; // 100ms 간격 (1초에 10번)
+
+    const sendBreathingData = async (average) => {
+      try {
+        const apiUrl = process.env.REACT_APP_API_URL;
+        if (!apiUrl) {
+          throw new Error("API URL이 설정되지 않았습니다");
+        }
+
+        const response = await fetch(`${apiUrl}/api/labs/breathing`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_for_login,
+            average_volume: average,
+            timestamp: new Date().toISOString(),
+          }),
+        });
+
+        if (!response.ok) {
+          console.error("호흡 데이터 전송 실패:", response.status);
+        }
+      } catch (error) {
+        console.error("호흡 데이터 전송 중 오류:", error);
+      }
+    };
 
     const draw = () => {
       analyserRef.current.getByteFrequencyData(dataArrayRef.current);
@@ -220,6 +275,13 @@ const LabPage = () => {
         dataArrayRef.current.reduce((acc, val) => acc + val, 0) /
         dataArrayRef.current.length;
       const roundedAverage = Math.round(average);
+
+      // API 요청 주기 제어
+      const currentTime = Date.now();
+      if (currentTime - lastApiCallTime >= API_CALL_INTERVAL) {
+        sendBreathingData(roundedAverage);
+        lastApiCallTime = currentTime;
+      }
 
       // 캔버스 초기화
       ctx.fillStyle = "rgb(200, 200, 200)";
@@ -260,7 +322,7 @@ const LabPage = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [isRecording, updateBreathState]);
+  }, [isRecording, updateBreathState, id_for_login]);
 
   // 오디오 객체 초기화를 컴포넌트 마운트 시 한 번만 수행
   useEffect(() => {
