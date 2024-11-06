@@ -154,6 +154,8 @@ const LabPage = () => {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                "Content-Security-Policy":
+                  "connect-src 'self' http://13.125.175.128 https:;",
               },
               body: JSON.stringify({
                 id_for_login,
@@ -253,6 +255,8 @@ const LabPage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Content-Security-Policy":
+              "connect-src 'self' http://13.125.175.128 https:;",
           },
           body: JSON.stringify({
             id_for_login,
