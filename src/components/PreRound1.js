@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const PreRound1 = () => {
+  const { userId } = useParams();
   const [stage, setStage] = useState("instruction");
   const [audioCount, setAudioCount] = useState(0);
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const PreRound1 = () => {
             setStage("word");
           }, 500);
         } else if (stage === "word") {
-          navigate("/test/menu");
+          navigate(`/${userId}/menu`);
         }
       }
     };
@@ -24,7 +25,7 @@ const PreRound1 = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [stage, navigate]);
+  }, [stage, navigate, userId]);
 
   useEffect(() => {
     if (stage === "word") {
