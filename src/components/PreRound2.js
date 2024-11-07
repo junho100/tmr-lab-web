@@ -6,6 +6,7 @@ const PreRound2 = () => {
   const navigate = useNavigate();
   const [stage, setStage] = useState("instruction");
   const [isCompleted, setIsCompleted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(7);
 
   // 스페이스바 이벤트 핸들러
   useEffect(() => {
@@ -31,11 +32,19 @@ const PreRound2 = () => {
   // 오디오 재생과 정답 표시를 위한 useEffect
   useEffect(() => {
     let timer;
+    let countdownTimer;
+
     if (stage === "question") {
       const audio = new Audio(
         "https://papago.naver.com/apis/tts/c_lt_clara_2.2.30.0.3.32_164-nvoice_clara_2.2.30.0.3.32_91a33ac6b0a7c4f551f8d6edb2db5039-1727670602445.mp3"
       );
       audio.play();
+
+      setTimeLeft(7);
+
+      countdownTimer = setInterval(() => {
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
 
       timer = setTimeout(() => {
         setStage("answer");
@@ -45,6 +54,7 @@ const PreRound2 = () => {
 
     return () => {
       if (timer) clearTimeout(timer);
+      if (countdownTimer) clearInterval(countdownTimer);
     };
   }, [stage]);
 
@@ -96,9 +106,18 @@ const PreRound2 = () => {
         </div>
       )}
 
-      {stage === "question" && <div style={{ fontSize: "100px" }}>?</div>}
+      {stage === "question" && (
+        <div style={{ textAlign: "center" }}>
+          <p style={{ fontSize: "100px", marginBottom: "20px" }}>?</p>
+          <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
+        </div>
+      )}
 
-      {stage === "answer" && <div style={{ fontSize: "100px" }}>사과</div>}
+      {stage === "answer" && (
+        <div style={{ textAlign: "center" }}>
+          <p style={{ fontSize: "100px" }}>사과</p>
+        </div>
+      )}
     </div>
   );
 };

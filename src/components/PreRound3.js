@@ -5,6 +5,7 @@ const PreRound3 = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [stage, setStage] = useState("instruction");
+  const [timeLeft, setTimeLeft] = useState(7);
 
   // ... existing code ...
 
@@ -31,13 +32,31 @@ const PreRound3 = () => {
 
   // 오디오 재생을 위한 useEffect
   useEffect(() => {
+    let timer;
+    let countdownTimer;
+
     if (stage === "question") {
       const audio = new Audio(
         "https://papago.naver.com/apis/tts/c_lt_clara_2.2.30.0.3.32_164-nvoice_clara_2.2.30.0.3.32_91a33ac6b0a7c4f551f8d6edb2db5039-1727670602445.mp3"
       );
       audio.play();
+
+      setTimeLeft(7);
+
+      countdownTimer = setInterval(() => {
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+
+      timer = setTimeout(() => {
+        navigate(`/${userId}/menu`);
+      }, 7000);
     }
-  }, [stage]);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      if (countdownTimer) clearInterval(countdownTimer);
+    };
+  }, [stage, userId, navigate]);
 
   return (
     <div
@@ -87,7 +106,12 @@ const PreRound3 = () => {
         </div>
       )}
 
-      {stage === "question" && <div style={{ fontSize: "100px" }}>?</div>}
+      {stage === "question" && (
+        <div style={{ textAlign: "center" }}>
+          <p style={{ fontSize: "100px", marginBottom: "20px" }}>?</p>
+          <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
+        </div>
+      )}
     </div>
   );
 };

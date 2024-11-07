@@ -6,6 +6,7 @@ const PreRound1 = () => {
   const [stage, setStage] = useState("instruction");
   const [audioCount, setAudioCount] = useState(0);
   const navigate = useNavigate();
+  const [timeLeft, setTimeLeft] = useState(5);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
@@ -26,6 +27,28 @@ const PreRound1 = () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
   }, [stage, navigate, userId]);
+
+  useEffect(() => {
+    let timer;
+    let countdownTimer;
+
+    if (stage === "word") {
+      setTimeLeft(5);
+
+      countdownTimer = setInterval(() => {
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+
+      timer = setTimeout(() => {
+        navigate(`/${userId}/menu`);
+      }, 5000);
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      if (countdownTimer) clearInterval(countdownTimer);
+    };
+  }, [stage, userId, navigate]);
 
   useEffect(() => {
     if (stage === "word") {
@@ -88,8 +111,9 @@ const PreRound1 = () => {
         </div>
       )}
       {stage === "word" && (
-        <div>
-          <p style={{ fontSize: "100px" }}>사과</p>
+        <div style={{ textAlign: "center" }}>
+          <p style={{ fontSize: "100px", marginBottom: "20px" }}>사과</p>
+          <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
         </div>
       )}
     </div>
