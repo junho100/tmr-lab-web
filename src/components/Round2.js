@@ -611,6 +611,7 @@ const Round2 = () => {
   const [stage, setStage] = useState("instruction");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(7);
 
   // 스페이스바 이벤트 핸들러
   useEffect(() => {
@@ -636,24 +637,36 @@ const Round2 = () => {
   // 단어 진행 및 타이밍 제어
   useEffect(() => {
     let timer;
+    let countdownTimer;
 
     if (stage === "question") {
       // 오디오 재생
       const audio = new Audio(mockWords[currentWordIndex].audioUrl);
       audio.play();
 
+      // 타이머 초기화
+      setTimeLeft(7);
+
+      // 카운트다운 타이머
+      countdownTimer = setInterval(() => {
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+
       // 7초 후 정답 표시
       timer = setTimeout(() => {
         setStage("answer");
+        clearInterval(countdownTimer);
+        setTimeLeft(2); // answer 단계에서 2초 타이머 시작
       }, 7000);
     } else if (stage === "answer") {
-      // 2초 동안 정답 표시
+      countdownTimer = setInterval(() => {
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+
       timer = setTimeout(() => {
         if (currentWordIndex < mockWords.length - 1) {
           setCurrentWordIndex((prev) => prev + 1);
           setStage("cross");
-
-          // 0.5초 후 다음 문제
           setTimeout(() => {
             setStage("question");
           }, 500);
@@ -666,6 +679,7 @@ const Round2 = () => {
 
     return () => {
       if (timer) clearTimeout(timer);
+      if (countdownTimer) clearInterval(countdownTimer);
     };
   }, [stage, currentWordIndex]);
 
@@ -753,11 +767,18 @@ const Round2 = () => {
           </div>
         )}
 
-        {stage === "question" && <div style={{ fontSize: "100px" }}>?</div>}
+        {stage === "question" && (
+          <div style={{ textAlign: "center" }}>
+            <p style={{ fontSize: "100px", marginBottom: "20px" }}>?</p>
+            <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
+          </div>
+        )}
 
         {stage === "answer" && (
-          <div style={{ fontSize: "100px" }}>
-            {mockWords[currentWordIndex].korean}
+          <div style={{ textAlign: "center" }}>
+            <p style={{ fontSize: "100px", marginBottom: "20px" }}>
+              {mockWords[currentWordIndex].korean}
+            </p>
           </div>
         )}
 
