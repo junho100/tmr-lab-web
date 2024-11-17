@@ -16,6 +16,8 @@ import PreRound2 from "./components/PreRound2";
 import PreRound3 from "./components/PreRound3";
 import PreTest from "./components/PreTest";
 import Test from "./components/Test";
+import PreTestResult from "./components/PreTestResult";
+
 const App = () => {
   return (
     <Router basename={process.env.PUBLIC_URL}>
@@ -41,6 +43,7 @@ const AuthenticatedRoutes = () => {
       <Route path="round3" element={<Round3 />} />
       <Route path="pre-test" element={<PreTest />} />
       <Route path="test" element={<Test />} />
+      <Route path="pretest-result" element={<PreTestResult />} />
       <Route path="*" element={<Navigate to="menu" replace />} />
     </Routes>
   );

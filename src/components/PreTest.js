@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-const mockWords = [
+export const mockWords = [
   {
     korean: "작업",
     english: "task",
