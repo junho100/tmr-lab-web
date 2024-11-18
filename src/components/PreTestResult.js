@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { mockWords } from "./PreTest";
 
 const PreTestResult = () => {
   const { userId } = useParams();
-  const navigate = useNavigate();
   const [results, setResults] = useState(
     mockWords.map((word) => ({
       ...word,
@@ -27,7 +26,7 @@ const PreTestResult = () => {
 
     try {
       const apiUrl = process.env.REACT_APP_API_URL;
-      await fetch(`${apiUrl}/api/pretest-results`, {
+      const response = await fetch(`${apiUrl}/api/labs/test`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,8 +40,11 @@ const PreTestResult = () => {
         }),
       });
 
-      alert("결과가 성공적으로 저장되었습니다.");
-      navigate(`/${userId}/menu`);
+      if (response.status === 201) {
+        alert("결과가 성공적으로 저장되었습니다.");
+      } else {
+        throw new Error(`서버 응답 오류: ${response.status}`);
+      }
     } catch (error) {
       console.error("결과 저장 중 오류 발생:", error);
       alert("결과 저장 중 오류가 발생했습니다.");
