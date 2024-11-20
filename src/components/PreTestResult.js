@@ -7,7 +7,7 @@ const PreTestResult = () => {
   const [results, setResults] = useState(
     mockWords.map((word) => ({
       ...word,
-      isCorrect: null, // null: 미체크, true: 정답, false: 오답
+      isCorrect: true, // null에서 true로 변경
     }))
   );
 
