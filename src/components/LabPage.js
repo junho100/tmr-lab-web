@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { mockWords } from "./Test"; // Test.js에서 mockWords를 export 해야 합니다
 
 const Container = styled.div`
   display: flex;
@@ -47,12 +46,14 @@ const SliderContainer = styled.div`
 `;
 
 const LabPage = () => {
-  const { id_for_login } = useParams();
+  const { userId } = useParams();
+  const navigate = useNavigate();
   const canvasRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
   const [threshold, setThreshold] = useState(20);
   const [breathState, setBreathState] = useState("ready");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [words, setWords] = useState([]);
 
   // 필요한 ref을 정의
   const audioContextRef = useRef(null);
@@ -140,14 +141,17 @@ const LabPage = () => {
       loudDurationRef.current = 0;
 
       if (newState === "between") {
-        // between 상태에서 음성 재생 및 API 호출
-        if (!hasPlayedAudioRef.current && audioElement.current) {
-          const currentWord = mockWords[currentWordIndex];
-          audioElement.current.src = currentWord.audioUrl;
+        if (
+          !hasPlayedAudioRef.current &&
+          audioElement.current &&
+          words.length > 0
+        ) {
+          const currentWord = words[currentWordIndex];
+          audioElement.current.src = `${process.env.PUBLIC_URL}/${currentWord}.mp3`;
           audioElement.current.play();
           hasPlayedAudioRef.current = true;
 
-          // 사운드 큐 API 호출 - english 속성 사용
+          // 사운드 큐 API 호출 수정
           const apiUrl = process.env.REACT_APP_API_URL;
           if (apiUrl) {
             fetch(`${apiUrl}/api/labs/cue`, {
@@ -156,8 +160,8 @@ const LabPage = () => {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                id_for_login,
-                target_word: currentWord.english,
+                id_for_login: userId,
+                target_word: currentWord,
                 timestamp: new Date().toISOString(),
               }),
             })
@@ -171,15 +175,15 @@ const LabPage = () => {
               });
           }
 
-          // 다음 단어 인덱스로 업데이트
-          setCurrentWordIndex((prev) => (prev + 1) % mockWords.length);
+          // 다음 단어 인덱스로 업데이트 (words 배열 길이 사용)
+          setCurrentWordIndex((prev) => (prev + 1) % words.length);
         }
       } else {
         longQuietDurationRef.current = 0;
         hasPlayedAudioRef.current = false;
       }
     },
-    [breathState, currentWordIndex, id_for_login]
+    [breathState, currentWordIndex, userId, words]
   );
 
   const startRecording = async () => {
@@ -255,7 +259,7 @@ const LabPage = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            id_for_login,
+            id_for_login: userId,
             average_volume: average,
             timestamp: new Date().toISOString(),
           }),
@@ -322,7 +326,7 @@ const LabPage = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [isRecording, updateBreathState, id_for_login]);
+  }, [isRecording, updateBreathState, userId]);
 
   // 오디오 객체 초기화를 컴포넌트 마운트 시 한 번만 수행
   useEffect(() => {
@@ -338,6 +342,33 @@ const LabPage = () => {
       }
     };
   }, []);
+
+  // API에서 단어 리스트를 가져오는 useEffect 추가
+  useEffect(() => {
+    const fetchWords = async () => {
+      try {
+        const apiUrl = process.env.REACT_APP_API_URL;
+        const response = await fetch(`${apiUrl}/api/labs/cue?id=${userId}`);
+
+        if (response.status === 404) {
+          alert("사전 테스트 결과가 존재하지 않습니다.");
+          navigate(`/${userId}/menu`);
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("단어 리스트를 가져오는데 실패했습니다");
+        }
+
+        const data = await response.json();
+        setWords(data.words);
+      } catch (error) {
+        console.error("단어 리스트 가져오기 오류:", error);
+      }
+    };
+
+    fetchWords();
+  }, [userId]);
 
   return (
     <Container>
