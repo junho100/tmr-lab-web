@@ -17,7 +17,7 @@ const ExperimentMenu = () => {
   ];
 
   const handleSelectOption = async (path) => {
-    if (path === "pre-test") {
+    if (path === "pre-test" || path === "test") {
       try {
         const apiUrl = process.env.REACT_APP_API_URL;
         const response = await fetch(`${apiUrl}/api/labs/start-test`, {
@@ -27,6 +27,7 @@ const ExperimentMenu = () => {
           },
           body: JSON.stringify({
             lab_id: userId,
+            type: path === "pre-test" ? "pretest" : "test",
           }),
         });
 

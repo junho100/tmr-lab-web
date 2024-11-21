@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { mockWords } from "./PreTest";
+import { mockWords } from "./Test";
 
-const PreTestResult = () => {
+const TestResult = () => {
   const { userId } = useParams();
   const [results, setResults] = useState(
     mockWords.map((word) => ({
       ...word,
-      isCorrect: true, // null에서 true로 변경
+      isCorrect: true,
     }))
   );
 
@@ -33,7 +33,7 @@ const PreTestResult = () => {
         },
         body: JSON.stringify({
           id_for_login: userId,
-          type: "pretest",
+          type: "test",
           results: results.map((result) => ({
             word: result.english,
             is_correct: result.isCorrect,
@@ -55,7 +55,7 @@ const PreTestResult = () => {
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
-        사전 테스트 결과 기록
+        테스트 결과 기록
       </h1>
 
       <div style={{ marginBottom: "20px" }}>
@@ -128,4 +128,4 @@ const PreTestResult = () => {
   );
 };
 
-export default PreTestResult;
+export default TestResult;
