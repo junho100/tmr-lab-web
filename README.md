@@ -1,70 +1,123 @@
-# Getting Started with Create React App
+# TMR Lab Web Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A web-based experimental application for testing memory and recall using Korean-English word pairs with audio stimuli.
 
-## Available Scripts
+## Overview
 
-In the project directory, you can run:
+This application is designed to conduct psychological experiments testing memory and recall abilities. It presents participants with Korean-English word pairs in different experimental conditions and formats, including:
 
-### `npm start`
+- Pre-test phase
+- Multiple experimental rounds
+- Audio playback
+- Visual stimuli
+- Timed presentations
+- Result recording
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Key Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 1. Experimental Flow
 
-### `npm test`
+- Pre-test phase to establish baseline
+- Multiple experimental rounds with different presentation formats
+- Cross-fixation between stimuli
+- Timed presentation of stimuli
+- Progress tracking
+- Result recording and submission
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 2. Stimulus Types
 
-### `npm run build`
+- Korean-English word pairs
+- Audio playback of English words
+- Visual presentation of Korean words
+- Cross-fixation points between stimuli
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 3. User Interface
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Clean, distraction-free design
+- Progress bar showing completion status
+- Countdown timers
+- Space bar navigation
+- Clear instructions between phases
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 4. Technical Features
 
-### `npm run eject`
+- React-based single page application
+- Client-side routing
+- Environment-specific configurations
+- Mobile-responsive design
+- Tailwind CSS styling
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Technology Stack
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- React 18.3.1
+- React Router DOM 6.26.2
+- Styled Components 6.1.13
+- Tailwind CSS 3.4.13
+- Environment Configuration (env-cmd)
+- GitHub Pages Deployment
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Project Structure
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+tmr-lab-web/
+├── public/
+│ ├── audio/ # Audio files for word stimuli
+│ └── index.html
+├── src/
+│ ├── components/
+│ │ ├── PreTest.js
+│ │ ├── Round1.js
+│ │ ├── Round2.js
+│ │ ├── Round3.js
+│ │ ├── Test.js
+│ │ ├── TestResult.js
+│ │ └── LabPage.js
+│ ├── App.js
+│ └── index.js
 
-## Learn More
+## Setup and Installation
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Clone the repository:
+   git clone https://github.com/junho100/tmr-lab-web.git
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. Install dependencies:
+   npm install
 
-### Code Splitting
+3. Create environment files:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+# .env.local for development
 
-### Analyzing the Bundle Size
+# .env.production for production
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+4. Run development server:
+   npm start
 
-### Making a Progressive Web App
+5. Build for production:
+   npm run build
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Deployment
 
-### Advanced Configuration
+The application is configured for GitHub Pages deployment:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+npm run deploy
 
-### Deployment
+This will:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. Build the application with production settings
+2. Create a 404.html fallback
+3. Deploy to GitHub Pages
 
-### `npm run build` fails to minify
+## Environment Variables
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+The application uses different environment configurations for development and production:
+
+- .env.local: Development environment
+- .env.production: Production environment
+
+## Browser Support
+
+The application supports:
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
