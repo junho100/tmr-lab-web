@@ -58,6 +58,7 @@ This application is designed to conduct psychological experiments testing memory
 
 ## Project Structure
 
+```
 tmr-lab-web/
 ├── public/
 │ ├── audio/ # Audio files for word stimuli
@@ -73,6 +74,7 @@ tmr-lab-web/
 │ │ └── LabPage.js
 │ ├── App.js
 │ └── index.js
+```
 
 ## Setup and Installation
 
