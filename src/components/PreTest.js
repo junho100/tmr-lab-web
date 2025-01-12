@@ -634,8 +634,10 @@ const PreTest = () => {
   // 단어 진행 및 타이밍 제어 수정
   useEffect(() => {
     if (stage === "question") {
-      const audio = new Audio(mockWords[currentWordIndex].audioUrl);
-      audio.play();
+      setTimeout(() => {
+        const audio = new Audio(mockWords[currentWordIndex].audioUrl);
+        audio.play();
+      }, 500);
     }
   }, [stage, currentWordIndex]);
 
