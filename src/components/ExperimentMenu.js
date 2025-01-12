@@ -16,34 +16,8 @@ const ExperimentMenu = () => {
     { name: "Test", path: "test" },
   ];
 
-  const handleSelectOption = async (path) => {
-    if (path === "pre-test" || path === "test") {
-      try {
-        const apiUrl = process.env.REACT_APP_API_URL;
-        const response = await fetch(`${apiUrl}/api/labs/start-test`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            lab_id: userId,
-            type: path === "pre-test" ? "pretest" : "test",
-          }),
-        });
-
-        if (response.status === 201) {
-          navigate(`/${userId}/${path}`);
-        } else {
-          console.error("테스트 시작 API 호출 실패:", response.status);
-          alert("테스트 시작에 실패했습니다. 다시 시도해주세요.");
-        }
-      } catch (error) {
-        console.error("테스트 시작 중 오류:", error);
-        alert("테스트 시작 중 오류가 발생했습니다.");
-      }
-    } else {
-      navigate(`/${userId}/${path}`);
-    }
+  const handleSelectOption = (path) => {
+    navigate(`/${userId}/${path}`);
   };
 
   const menuStyle = {
