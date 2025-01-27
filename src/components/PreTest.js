@@ -641,6 +641,20 @@ const PreTest = () => {
     }
   }, [stage, currentWordIndex]);
 
+  // 새로고침 방지 기능 추가
+  useEffect(() => {
+    const preventRefresh = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", preventRefresh);
+
+    return () => {
+      window.removeEventListener("beforeunload", preventRefresh);
+    };
+  }, []);
+
   // 새로운 함수들 추가
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
