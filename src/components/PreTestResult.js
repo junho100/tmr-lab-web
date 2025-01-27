@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { mockWords } from "./PreTest";
+import { mockWords } from "./Words";
 
 const PreTestResult = () => {
   const { userId } = useParams();
