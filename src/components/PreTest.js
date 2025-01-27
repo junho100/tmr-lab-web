@@ -7,8 +7,6 @@ const PreTest = () => {
   const navigate = useNavigate();
   const [stage, setStage] = useState("instruction");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [countdown, setCountdown] = useState(7);
   const [userInput, setUserInput] = useState("");
   const [results, setResults] = useState([]);
 
