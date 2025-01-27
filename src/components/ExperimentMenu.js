@@ -13,6 +13,7 @@ const ExperimentMenu = () => {
     { name: "Round3", path: "round3" },
     { name: "Pre-Test", path: "pre-test" },
     { name: "Test", path: "test" },
+    { name: "Breathing Monitor", path: "breathing-monitor" },
   ];
 
   const handleSelectOption = (path) => {
