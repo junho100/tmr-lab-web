@@ -661,7 +661,20 @@ const PreTest = () => {
   };
 
   const handleNextWord = () => {
-    // 결과 저장 - 속성명 변경
+    // 마지막 단어인 경우
+    if (currentWordIndex === mockWords.length - 1) {
+      const finalResults = [
+        ...results,
+        {
+          word: mockWords[currentWordIndex].english,
+          written_word: userInput,
+        },
+      ];
+      handleSubmit(finalResults);
+      return;
+    }
+
+    // 결과 저장
     setResults((prev) => [
       ...prev,
       {
@@ -671,20 +684,15 @@ const PreTest = () => {
     ]);
 
     // 다음 단어로 이동
-    if (currentWordIndex < mockWords.length - 1) {
-      setUserInput("");
-      setCurrentWordIndex((prev) => prev + 1);
-      setStage("cross");
-      setTimeout(() => {
-        setStage("question");
-      }, 500);
-    } else {
-      setStage("completed");
-      setIsCompleted(true);
-    }
+    setUserInput("");
+    setCurrentWordIndex((prev) => prev + 1);
+    setStage("cross");
+    setTimeout(() => {
+      setStage("question");
+    }, 500);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (finalResults) => {
     try {
       const apiUrl = process.env.REACT_APP_API_URL;
       const response = await fetch(`${apiUrl}/api/labs/start-test`, {
@@ -695,7 +703,7 @@ const PreTest = () => {
         body: JSON.stringify({
           lab_id: userId,
           type: "pretest",
-          results: results,
+          results: finalResults,
         }),
       });
 
@@ -736,11 +744,7 @@ const PreTest = () => {
         autoFocus
       />
       <button
-        onClick={
-          currentWordIndex === mockWords.length - 1
-            ? handleSubmit
-            : handleNextWord
-        }
+        onClick={handleNextWord}
         style={{
           padding: "10px 20px",
           fontSize: "20px",
@@ -767,8 +771,8 @@ const PreTest = () => {
         padding: "20px",
       }}
     >
-      {/* Status Bar - 기존과 동일 */}
-      {stage !== "instruction" && stage !== "completed" && (
+      {/* Status Bar */}
+      {stage !== "instruction" && (
         <div style={{ marginBottom: "20px" }}>
           <div
             style={{
@@ -801,7 +805,6 @@ const PreTest = () => {
           alignItems: "center",
         }}
       >
-        {/* instruction, cross, question, completed 스테이지는 동일하게 유지 */}
         {stage === "instruction" && (
           <p style={{ fontSize: "60px", textAlign: "center" }}>
             지금부터 사전 테스트 시행을 시작합니다.
@@ -842,14 +845,6 @@ const PreTest = () => {
         )}
 
         {stage === "question" && renderQuestionStage()}
-
-        {stage === "completed" && (
-          <p style={{ fontSize: "60px", textAlign: "center" }}>
-            실험이 완료되었습니다.
-            <br />
-            스페이스바를 눌러 메뉴로 돌아가세요.
-          </p>
-        )}
       </div>
     </div>
   );
