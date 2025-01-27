@@ -7,21 +7,17 @@ const Test = () => {
   const navigate = useNavigate();
   const [stage, setStage] = useState("instruction");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [countdown, setCountdown] = useState(7);
+  const [userInput, setUserInput] = useState("");
+  const [results, setResults] = useState([]);
 
-  // 스페이스바 이벤트 핸들러는 동일
+  // 스페이스바 이벤트 핸들러 수정
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (event.code === "Space") {
-        if (stage === "instruction") {
-          setStage("cross");
-          setTimeout(() => {
-            setStage("question");
-          }, 500);
-        } else if (isCompleted) {
-          navigate(`/${userId}/menu`);
-        }
+      if (event.code === "Space" && stage === "instruction") {
+        setStage("cross");
+        setTimeout(() => {
+          setStage("question");
+        }, 500);
       }
     };
 
@@ -29,47 +25,136 @@ const Test = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [stage, isCompleted, navigate, userId]);
+  }, [stage]);
 
   // 단어 진행 및 타이밍 제어 수정
   useEffect(() => {
-    let timer;
-    let countdownTimer;
-
     if (stage === "question") {
-      // 오디오 재생
-      const audio = new Audio(mockWords[currentWordIndex].audioUrl);
-      audio.play();
-
-      setCountdown(7);
-
-      // 카운트다운 타이머
-      countdownTimer = setInterval(() => {
-        setCountdown((prev) => prev - 1);
-      }, 1000);
-
-      // 7초 후 다음 단어로
-      timer = setTimeout(() => {
-        if (currentWordIndex < mockWords.length - 1) {
-          setCurrentWordIndex((prev) => prev + 1);
-          setStage("cross");
-
-          // 0.5초 후 다음 문제
-          setTimeout(() => {
-            setStage("question");
-          }, 500);
-        } else {
-          setStage("completed");
-          setIsCompleted(true);
-        }
-      }, 7000);
+      setTimeout(() => {
+        const audio = new Audio(mockWords[currentWordIndex].audioUrl);
+        audio.play();
+      }, 500);
     }
+  }, [stage, currentWordIndex]);
+
+  // 새로고침 방지 기능 추가
+  useEffect(() => {
+    const preventRefresh = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", preventRefresh);
 
     return () => {
-      if (timer) clearTimeout(timer);
-      if (countdownTimer) clearInterval(countdownTimer);
+      window.removeEventListener("beforeunload", preventRefresh);
     };
-  }, [stage, currentWordIndex]);
+  }, []);
+
+  // 새로운 함수들 추가
+  const handleInputChange = (e) => {
+    setUserInput(e.target.value);
+  };
+
+  const handleNextWord = () => {
+    // 마지막 단어인 경우
+    if (currentWordIndex === mockWords.length - 1) {
+      const finalResults = [
+        ...results,
+        {
+          word: mockWords[currentWordIndex].english,
+          written_word: userInput,
+        },
+      ];
+      handleSubmit(finalResults);
+      return;
+    }
+
+    // 결과 저장
+    setResults((prev) => [
+      ...prev,
+      {
+        word: mockWords[currentWordIndex].english,
+        written_word: userInput,
+      },
+    ]);
+
+    // 다음 단어로 이동
+    setUserInput("");
+    setCurrentWordIndex((prev) => prev + 1);
+    setStage("cross");
+    setTimeout(() => {
+      setStage("question");
+    }, 500);
+  };
+
+  const handleSubmit = async (finalResults) => {
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/labs/start-test`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          lab_id: userId,
+          type: "test",
+          results: finalResults,
+        }),
+      });
+
+      if (response.status === 201) {
+        navigate(`/${userId}/menu`);
+      } else {
+        console.error("테스트 제출 API 호출 실패:", response.status);
+        alert("테스트 제출에 실패했습니다. 다시 시도해주세요.");
+      }
+    } catch (error) {
+      console.error("테스트 제출 중 오류:", error);
+      alert("테스트 제출 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 렌더링 부분 수정
+  const renderQuestionStage = () => (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "20px",
+      }}
+    >
+      <div style={{ fontSize: "40px" }}>단어를 듣고 한글로 입력하세요</div>
+      <input
+        type="text"
+        value={userInput}
+        onChange={handleInputChange}
+        onKeyPress={(e) => e.key === "Enter" && handleNextWord()}
+        style={{
+          fontSize: "24px",
+          padding: "10px",
+          width: "300px",
+          textAlign: "center",
+        }}
+        autoFocus
+      />
+      <button
+        onClick={handleNextWord}
+        style={{
+          padding: "10px 20px",
+          fontSize: "20px",
+          backgroundColor: "#4CAF50",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+      >
+        {currentWordIndex === mockWords.length - 1 ? "시험 종료" : "다음"}
+      </button>
+    </div>
+  );
 
   const progress = ((currentWordIndex + 1) / mockWords.length) * 100;
 
@@ -82,8 +167,8 @@ const Test = () => {
         padding: "20px",
       }}
     >
-      {/* Status Bar - 기존과 동일 */}
-      {stage !== "instruction" && stage !== "completed" && (
+      {/* Status Bar */}
+      {stage !== "instruction" && (
         <div style={{ marginBottom: "20px" }}>
           <div
             style={{
@@ -116,10 +201,9 @@ const Test = () => {
           alignItems: "center",
         }}
       >
-        {/* instruction, cross, question, completed 스테이지는 동일하게 유지 */}
         {stage === "instruction" && (
           <p style={{ fontSize: "60px", textAlign: "center" }}>
-            지금부터 테스트 시행을 시작합니다.
+            지금부터 사후 테스트 시행을 시작합니다.
             <br />
             스페이스바를 눌러주세요.
           </p>
@@ -156,27 +240,7 @@ const Test = () => {
           </div>
         )}
 
-        {stage === "question" && (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "20px",
-            }}
-          >
-            <div style={{ fontSize: "100px" }}>?</div>
-            <div style={{ fontSize: "40px" }}>남은시간 : {countdown}초</div>
-          </div>
-        )}
-
-        {stage === "completed" && (
-          <p style={{ fontSize: "60px", textAlign: "center" }}>
-            실험이 완료되었습니다.
-            <br />
-            스페이스바를 눌러 메뉴로 돌아가세요.
-          </p>
-        )}
+        {stage === "question" && renderQuestionStage()}
       </div>
     </div>
   );
