@@ -5,21 +5,17 @@ const PreRound2 = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [stage, setStage] = useState("instruction");
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(7);
+  const [timeLeft, setTimeLeft] = useState(5);
+  const [userInput, setUserInput] = useState("");
 
   // 스페이스바 이벤트 핸들러
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (event.code === "Space") {
-        if (stage === "instruction") {
-          setStage("cross");
-          setTimeout(() => {
-            setStage("question");
-          }, 500);
-        } else if (isCompleted) {
-          navigate(`/${userId}/menu`);
-        }
+      if (event.code === "Space" && stage === "instruction") {
+        setStage("cross");
+        setTimeout(() => {
+          setStage("question");
+        }, 500);
       }
     };
 
@@ -27,12 +23,13 @@ const PreRound2 = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [stage, isCompleted, navigate, userId]);
+  }, [stage]);
 
-  // 오디오 재생과 정답 표시를 위한 useEffect
+  // 타이머와 단계 전환을 위한 useEffect
   useEffect(() => {
     let timer;
     let countdownTimer;
+    let answerTimer;
 
     if (stage === "question") {
       const audio = new Audio(
@@ -40,7 +37,7 @@ const PreRound2 = () => {
       );
       audio.play();
 
-      setTimeLeft(7);
+      setTimeLeft(5);
 
       countdownTimer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
@@ -48,15 +45,29 @@ const PreRound2 = () => {
 
       timer = setTimeout(() => {
         setStage("answer");
-        setIsCompleted(true);
-      }, 7000);
+        answerTimer = setTimeout(() => {
+          navigate(`/${userId}/menu`);
+        }, 2000);
+      }, 5000);
     }
 
     return () => {
       if (timer) clearTimeout(timer);
       if (countdownTimer) clearInterval(countdownTimer);
+      if (answerTimer) clearTimeout(answerTimer);
     };
-  }, [stage]);
+  }, [stage, navigate, userId]);
+
+  const handleInputChange = (e) => {
+    setUserInput(e.target.value);
+  };
+
+  const handleSubmit = () => {
+    setStage("answer");
+    setTimeout(() => {
+      navigate(`/${userId}/menu`);
+    }, 2000);
+  };
 
   return (
     <div
@@ -109,7 +120,38 @@ const PreRound2 = () => {
       {stage === "question" && (
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: "100px", marginBottom: "20px" }}>?</p>
-          <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
+          <input
+            type="text"
+            value={userInput}
+            onChange={handleInputChange}
+            onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+            style={{
+              fontSize: "24px",
+              padding: "10px",
+              width: "300px",
+              textAlign: "center",
+              marginBottom: "20px",
+            }}
+            autoFocus
+            placeholder="단어를 입력하세요"
+          />
+          <p style={{ fontSize: "24px", marginBottom: "20px" }}>
+            남은시간: {timeLeft}초
+          </p>
+          <button
+            onClick={handleSubmit}
+            style={{
+              padding: "10px 20px",
+              fontSize: "20px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            확인
+          </button>
         </div>
       )}
 
