@@ -4,21 +4,17 @@ import { useNavigate, useParams } from "react-router-dom";
 const PreRound1 = () => {
   const { userId } = useParams();
   const [stage, setStage] = useState("instruction");
-  const [audioCount, setAudioCount] = useState(0);
-  const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(5);
+  const [userInput, setUserInput] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (event.code === "Space") {
-        if (stage === "instruction") {
-          setStage("cross");
-          setTimeout(() => {
-            setStage("word");
-          }, 500);
-        } else if (stage === "word") {
-          navigate(`/${userId}/menu`);
-        }
+      if (event.code === "Space" && stage === "instruction") {
+        setStage("cross");
+        setTimeout(() => {
+          setStage("word");
+        }, 500);
       }
     };
 
@@ -35,6 +31,12 @@ const PreRound1 = () => {
     if (stage === "word") {
       setTimeLeft(5);
 
+      // 오디오 재생
+      const audio = new Audio(
+        "https://papago.naver.com/apis/tts/c_lt_clara_2.2.30.0.3.32_164-nvoice_clara_2.2.30.0.3.32_91a33ac6b0a7c4f551f8d6edb2db5039-1727670602445.mp3"
+      );
+      audio.play();
+
       countdownTimer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
@@ -50,19 +52,13 @@ const PreRound1 = () => {
     };
   }, [stage, userId, navigate]);
 
-  useEffect(() => {
-    if (stage === "word") {
-      const audio = new Audio(
-        "https://papago.naver.com/apis/tts/c_lt_clara_2.2.30.0.3.32_164-nvoice_clara_2.2.30.0.3.32_91a33ac6b0a7c4f551f8d6edb2db5039-1727670602445.mp3"
-      );
-      const playAudio = () => {
-        audio.play();
-      };
+  const handleInputChange = (e) => {
+    setUserInput(e.target.value);
+  };
 
-      const timer = setTimeout(playAudio, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [stage]);
+  const handleSubmit = () => {
+    navigate(`/${userId}/menu`);
+  };
 
   return (
     <div
@@ -113,7 +109,36 @@ const PreRound1 = () => {
       {stage === "word" && (
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: "100px", marginBottom: "20px" }}>사과</p>
+          <input
+            type="text"
+            value={userInput}
+            onChange={handleInputChange}
+            onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+            style={{
+              fontSize: "24px",
+              padding: "10px",
+              width: "300px",
+              textAlign: "center",
+              marginBottom: "20px",
+            }}
+            autoFocus
+          />
           <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
+          <button
+            onClick={handleSubmit}
+            style={{
+              padding: "10px 20px",
+              fontSize: "20px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+              marginTop: "20px",
+            }}
+          >
+            확인
+          </button>
         </div>
       )}
     </div>
