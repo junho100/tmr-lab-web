@@ -610,9 +610,10 @@ const Round3 = () => {
   const [stage, setStage] = useState("instruction");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(7);
+  const [timeLeft, setTimeLeft] = useState(5);
+  const [userInput, setUserInput] = useState("");
 
-  // 스페이스바 이벤트 핸들러는 동일
+  // 스페이스바 이벤트 핸들러
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.code === "Space") {
@@ -633,7 +634,7 @@ const Round3 = () => {
     };
   }, [stage, isCompleted, navigate, userId]);
 
-  // 단어 진행 및 타이밍 제어 수정
+  // 단어 진행 및 타이밍 제어
   useEffect(() => {
     let timer;
     let countdownTimer;
@@ -644,14 +645,15 @@ const Round3 = () => {
       audio.play();
 
       // 타이머 초기화
-      setTimeLeft(7);
+      setTimeLeft(5);
+      setUserInput("");
 
       // 카운트다운 타이머
       countdownTimer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
 
-      // 7초 후 다음 단어로
+      // 5초 후 다음 단어로
       timer = setTimeout(() => {
         if (currentWordIndex < mockWords.length - 1) {
           setCurrentWordIndex((prev) => prev + 1);
@@ -663,7 +665,7 @@ const Round3 = () => {
           setStage("completed");
           setIsCompleted(true);
         }
-      }, 7000);
+      }, 5000);
     }
 
     return () => {
@@ -671,6 +673,23 @@ const Round3 = () => {
       if (countdownTimer) clearInterval(countdownTimer);
     };
   }, [stage, currentWordIndex]);
+
+  const handleInputChange = (e) => {
+    setUserInput(e.target.value);
+  };
+
+  const handleSubmit = () => {
+    if (currentWordIndex < mockWords.length - 1) {
+      setCurrentWordIndex((prev) => prev + 1);
+      setStage("cross");
+      setTimeout(() => {
+        setStage("question");
+      }, 500);
+    } else {
+      setStage("completed");
+      setIsCompleted(true);
+    }
+  };
 
   const progress = ((currentWordIndex + 1) / mockWords.length) * 100;
 
@@ -683,7 +702,7 @@ const Round3 = () => {
         padding: "20px",
       }}
     >
-      {/* Status Bar - 기존과 동일 */}
+      {/* Status Bar */}
       {stage !== "instruction" && stage !== "completed" && (
         <div style={{ marginBottom: "20px" }}>
           <div
@@ -717,7 +736,6 @@ const Round3 = () => {
           alignItems: "center",
         }}
       >
-        {/* instruction, cross, question, completed 스테이지는 동일하게 유지 */}
         {stage === "instruction" && (
           <p style={{ fontSize: "60px", textAlign: "center" }}>
             지금부터 본 시행을 시작합니다.
@@ -760,7 +778,38 @@ const Round3 = () => {
         {stage === "question" && (
           <div style={{ textAlign: "center" }}>
             <p style={{ fontSize: "100px", marginBottom: "20px" }}>?</p>
-            <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
+            <input
+              type="text"
+              value={userInput}
+              onChange={handleInputChange}
+              onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+              style={{
+                fontSize: "24px",
+                padding: "10px",
+                width: "300px",
+                textAlign: "center",
+                marginBottom: "20px",
+              }}
+              autoFocus
+              placeholder="단어를 입력하세요"
+            />
+            <p style={{ fontSize: "24px", marginBottom: "20px" }}>
+              남은시간: {timeLeft}초
+            </p>
+            <button
+              onClick={handleSubmit}
+              style={{
+                padding: "10px 20px",
+                fontSize: "20px",
+                backgroundColor: "#4CAF50",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              확인
+            </button>
           </div>
         )}
 

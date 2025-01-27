@@ -611,7 +611,8 @@ const Round2 = () => {
   const [stage, setStage] = useState("instruction");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(7);
+  const [timeLeft, setTimeLeft] = useState(5);
+  const [userInput, setUserInput] = useState("");
 
   // 스페이스바 이벤트 핸들러
   useEffect(() => {
@@ -638,6 +639,7 @@ const Round2 = () => {
   useEffect(() => {
     let timer;
     let countdownTimer;
+    let answerTimer;
 
     if (stage === "question") {
       // 오디오 재생
@@ -645,43 +647,61 @@ const Round2 = () => {
       audio.play();
 
       // 타이머 초기화
-      setTimeLeft(7);
+      setTimeLeft(5);
+      setUserInput("");
 
       // 카운트다운 타이머
       countdownTimer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
 
-      // 7초 후 정답 표시
+      // 5초 후 정답 표시
       timer = setTimeout(() => {
         setStage("answer");
         clearInterval(countdownTimer);
-        setTimeLeft(2); // answer 단계에서 2초 타이머 시작
-      }, 7000);
-    } else if (stage === "answer") {
-      countdownTimer = setInterval(() => {
-        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-      }, 1000);
 
-      timer = setTimeout(() => {
-        if (currentWordIndex < mockWords.length - 1) {
-          setCurrentWordIndex((prev) => prev + 1);
-          setStage("cross");
-          setTimeout(() => {
-            setStage("question");
-          }, 500);
-        } else {
-          setStage("completed");
-          setIsCompleted(true);
-        }
-      }, 2000);
+        // 2초 후 다음 단어로 이동
+        answerTimer = setTimeout(() => {
+          if (currentWordIndex < mockWords.length - 1) {
+            setCurrentWordIndex((prev) => prev + 1);
+            setStage("cross");
+            setTimeout(() => {
+              setStage("question");
+            }, 500);
+          } else {
+            setStage("completed");
+            setIsCompleted(true);
+          }
+        }, 2000);
+      }, 5000);
     }
 
     return () => {
       if (timer) clearTimeout(timer);
       if (countdownTimer) clearInterval(countdownTimer);
+      if (answerTimer) clearTimeout(answerTimer);
     };
   }, [stage, currentWordIndex]);
+
+  const handleInputChange = (e) => {
+    setUserInput(e.target.value);
+  };
+
+  const handleSubmit = () => {
+    setStage("answer");
+    setTimeout(() => {
+      if (currentWordIndex < mockWords.length - 1) {
+        setCurrentWordIndex((prev) => prev + 1);
+        setStage("cross");
+        setTimeout(() => {
+          setStage("question");
+        }, 500);
+      } else {
+        setStage("completed");
+        setIsCompleted(true);
+      }
+    }, 2000);
+  };
 
   const progress = ((currentWordIndex + 1) / mockWords.length) * 100;
 
@@ -694,7 +714,7 @@ const Round2 = () => {
         padding: "20px",
       }}
     >
-      {/* Status Bar - 문제 진행 중일 때만 보이도록 */}
+      {/* Status Bar */}
       {stage !== "instruction" && stage !== "completed" && (
         <div style={{ marginBottom: "20px" }}>
           <div
@@ -770,13 +790,44 @@ const Round2 = () => {
         {stage === "question" && (
           <div style={{ textAlign: "center" }}>
             <p style={{ fontSize: "100px", marginBottom: "20px" }}>?</p>
-            <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
+            <input
+              type="text"
+              value={userInput}
+              onChange={handleInputChange}
+              onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+              style={{
+                fontSize: "24px",
+                padding: "10px",
+                width: "300px",
+                textAlign: "center",
+                marginBottom: "20px",
+              }}
+              autoFocus
+              placeholder="단어를 입력하세요"
+            />
+            <p style={{ fontSize: "24px", marginBottom: "20px" }}>
+              남은시간: {timeLeft}초
+            </p>
+            <button
+              onClick={handleSubmit}
+              style={{
+                padding: "10px 20px",
+                fontSize: "20px",
+                backgroundColor: "#4CAF50",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              확인
+            </button>
           </div>
         )}
 
         {stage === "answer" && (
           <div style={{ textAlign: "center" }}>
-            <p style={{ fontSize: "100px", marginBottom: "20px" }}>
+            <p style={{ fontSize: "100px" }}>
               {mockWords[currentWordIndex].korean}
             </p>
           </div>

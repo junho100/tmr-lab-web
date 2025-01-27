@@ -49,7 +49,7 @@ const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/bird.mp3`,
   },
   {
-    korean: "담���",
+    korean: "담",
     english: "blanket",
     audioUrl: `${process.env.PUBLIC_URL}/blanket.mp3`,
   },
@@ -606,23 +606,22 @@ const mockWords = [
 ];
 
 const Round1 = () => {
-  const { userId } = useParams(); // userId path variable 가져오기
+  const { userId } = useParams();
   const navigate = useNavigate();
   const [stage, setStage] = useState("instruction");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [audio] = useState(new Audio());
   const [isCompleted, setIsCompleted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(5); // 5초 타이머 추가
+  const [timeLeft, setTimeLeft] = useState(5);
+  const [userInput, setUserInput] = useState("");
 
-  // playAudio 함수 개선
+  // playAudio 함수 유지
   const playAudio = async () => {
     try {
-      // 새로운 오디오 재생 전에 이전 오디오를 완전히 중지
       audio.pause();
       audio.currentTime = 0;
       audio.src = mockWords[currentWordIndex].audioUrl;
 
-      // 오디오 로드 완료 후 재생
       await new Promise((resolve) => {
         audio.oncanplaythrough = resolve;
         audio.load();
@@ -634,7 +633,6 @@ const Round1 = () => {
     }
   };
 
-  // showNextWord 함수 수정
   const showNextWord = () => {
     if (stage === "instruction") {
       setStage("cross");
@@ -644,24 +642,26 @@ const Round1 = () => {
     }
   };
 
-  // 타이머 로직 추가
+  // 타이머 로직
   useEffect(() => {
     let timer;
+    let countdownTimer;
 
     if (stage === "word") {
-      setTimeLeft(5); // 단어가 보일 때마다 5초로 초기화
+      setTimeLeft(5);
+      setUserInput("");
 
-      timer = setInterval(() => {
+      countdownTimer = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
-            clearInterval(timer);
+            clearInterval(countdownTimer);
             return 0;
           }
           return prev - 1;
         });
       }, 1000);
 
-      const wordTimer = setTimeout(() => {
+      timer = setTimeout(() => {
         if (currentWordIndex < mockWords.length - 1) {
           setStage("cross");
           setCurrentWordIndex((prev) => prev + 1);
@@ -676,20 +676,20 @@ const Round1 = () => {
       }, 5000);
 
       return () => {
-        clearInterval(timer);
-        clearTimeout(wordTimer);
+        clearInterval(countdownTimer);
+        clearTimeout(timer);
       };
     }
   }, [stage, currentWordIndex]);
 
-  // 스페이스바 이벤트 핸들러 수정
+  // 스페이스바 이벤트 핸들러
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.code === "Space") {
         if (stage === "instruction") {
           showNextWord();
         } else if (isCompleted) {
-          navigate(`/${userId}/menu`); // userId를 포함한 메뉴 경로로 이동
+          navigate(`/${userId}/menu`);
         }
       }
     };
@@ -698,9 +698,9 @@ const Round1 = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [stage, isCompleted, navigate, userId]); // userId 의존성 추가
+  }, [stage, isCompleted, navigate, userId]);
 
-  // 오디오 재생을 위한 useEffect
+  // 오디오 재생
   useEffect(() => {
     if (stage === "word") {
       playAudio();
@@ -711,7 +711,24 @@ const Round1 = () => {
         audio.currentTime = 0;
       }
     };
-  }, [stage, currentWordIndex]); // currentWordIndex 의존성 추가
+  }, [stage, currentWordIndex]);
+
+  const handleInputChange = (e) => {
+    setUserInput(e.target.value);
+  };
+
+  const handleSubmit = () => {
+    if (currentWordIndex < mockWords.length - 1) {
+      setStage("cross");
+      setCurrentWordIndex((prev) => prev + 1);
+      setTimeout(() => {
+        setStage("word");
+      }, 500);
+    } else {
+      setStage("completed");
+      setIsCompleted(true);
+    }
+  };
 
   const progress = ((currentWordIndex + 1) / mockWords.length) * 100;
 
@@ -724,7 +741,7 @@ const Round1 = () => {
         padding: "20px",
       }}
     >
-      {/* Status Bar - 단어 표시 중일 때만 보이도록 */}
+      {/* Status Bar */}
       {stage !== "instruction" && (
         <div style={{ marginBottom: "20px" }}>
           <div
@@ -811,7 +828,38 @@ const Round1 = () => {
             <p style={{ fontSize: "100px", marginBottom: "20px" }}>
               {mockWords[currentWordIndex].korean}
             </p>
-            <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
+            <input
+              type="text"
+              value={userInput}
+              onChange={handleInputChange}
+              onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+              style={{
+                fontSize: "24px",
+                padding: "10px",
+                width: "300px",
+                textAlign: "center",
+                marginBottom: "20px",
+              }}
+              autoFocus
+              placeholder="단어를 입력하세요"
+            />
+            <p style={{ fontSize: "24px", marginBottom: "20px" }}>
+              남은시간: {timeLeft}초
+            </p>
+            <button
+              onClick={handleSubmit}
+              style={{
+                padding: "10px 20px",
+                fontSize: "20px",
+                backgroundColor: "#4CAF50",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              확인
+            </button>
           </div>
         )}
       </div>
