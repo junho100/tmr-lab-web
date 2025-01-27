@@ -5,9 +5,8 @@ const PreRound3 = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [stage, setStage] = useState("instruction");
-  const [timeLeft, setTimeLeft] = useState(7);
-
-  // ... existing code ...
+  const [timeLeft, setTimeLeft] = useState(5);
+  const [userInput, setUserInput] = useState("");
 
   // 스페이스바 이벤트 핸들러
   useEffect(() => {
@@ -18,8 +17,6 @@ const PreRound3 = () => {
           setTimeout(() => {
             setStage("question");
           }, 500);
-        } else if (stage === "question") {
-          navigate(`/${userId}/menu`);
         }
       }
     };
@@ -28,9 +25,9 @@ const PreRound3 = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [stage, navigate, userId]);
+  }, [stage]);
 
-  // 오디오 재생을 위한 useEffect
+  // 오디오 재생과 타이머를 위한 useEffect
   useEffect(() => {
     let timer;
     let countdownTimer;
@@ -41,7 +38,7 @@ const PreRound3 = () => {
       );
       audio.play();
 
-      setTimeLeft(7);
+      setTimeLeft(5);
 
       countdownTimer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
@@ -49,7 +46,7 @@ const PreRound3 = () => {
 
       timer = setTimeout(() => {
         navigate(`/${userId}/menu`);
-      }, 7000);
+      }, 5000);
     }
 
     return () => {
@@ -57,6 +54,14 @@ const PreRound3 = () => {
       if (countdownTimer) clearInterval(countdownTimer);
     };
   }, [stage, userId, navigate]);
+
+  const handleInputChange = (e) => {
+    setUserInput(e.target.value);
+  };
+
+  const handleSubmit = () => {
+    navigate(`/${userId}/menu`);
+  };
 
   return (
     <div
@@ -109,7 +114,38 @@ const PreRound3 = () => {
       {stage === "question" && (
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: "100px", marginBottom: "20px" }}>?</p>
-          <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
+          <input
+            type="text"
+            value={userInput}
+            onChange={handleInputChange}
+            onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+            style={{
+              fontSize: "24px",
+              padding: "10px",
+              width: "300px",
+              textAlign: "center",
+              marginBottom: "20px",
+            }}
+            autoFocus
+            placeholder="단어를 입력하세요"
+          />
+          <p style={{ fontSize: "24px", marginBottom: "20px" }}>
+            남은시간: {timeLeft}초
+          </p>
+          <button
+            onClick={handleSubmit}
+            style={{
+              padding: "10px 20px",
+              fontSize: "20px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            확인
+          </button>
         </div>
       )}
     </div>
