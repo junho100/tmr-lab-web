@@ -36,7 +36,6 @@ const Round2 = () => {
   useEffect(() => {
     let timer;
     let countdownTimer;
-    let answerTimer;
 
     if (stage === "question") {
       // 오디오 재생
@@ -49,34 +48,34 @@ const Round2 = () => {
 
       // 카운트다운 타이머
       countdownTimer = setInterval(() => {
-        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-      }, 1000);
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            // 시간이 다 되면 자동으로 정답 표시
+            setStage("answer");
+            clearInterval(countdownTimer);
 
-      // 5초 후 정답 표시
-      timer = setTimeout(() => {
-        setStage("answer");
-        clearInterval(countdownTimer);
-
-        // 2초 후 다음 단어로 이동
-        answerTimer = setTimeout(() => {
-          if (currentWordIndex < mockWords.length - 1) {
-            setCurrentWordIndex((prev) => prev + 1);
-            setStage("cross");
-            setTimeout(() => {
-              setStage("question");
-            }, 500);
-          } else {
-            setStage("completed");
-            setIsCompleted(true);
+            // 정답 표시 후 2초 뒤에 다음 단어로
+            timer = setTimeout(() => {
+              if (currentWordIndex < mockWords.length - 1) {
+                setCurrentWordIndex((prev) => prev + 1);
+                setStage("cross");
+                setTimeout(() => {
+                  setStage("question");
+                }, 500);
+              } else {
+                setStage("completed");
+                setIsCompleted(true);
+              }
+            }, 2000);
           }
-        }, 2000);
-      }, 5000);
+          return prev - 1;
+        });
+      }, 1000);
     }
 
     return () => {
       if (timer) clearTimeout(timer);
       if (countdownTimer) clearInterval(countdownTimer);
-      if (answerTimer) clearTimeout(answerTimer);
     };
   }, [stage, currentWordIndex]);
 
@@ -85,7 +84,11 @@ const Round2 = () => {
   };
 
   const handleSubmit = () => {
+    // 타이머 중지
+    setTimeLeft(0);
     setStage("answer");
+
+    // 정답 표시 후 2초 뒤에 다음 단어로
     setTimeout(() => {
       if (currentWordIndex < mockWords.length - 1) {
         setCurrentWordIndex((prev) => prev + 1);
