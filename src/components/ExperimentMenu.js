@@ -12,7 +12,6 @@ const ExperimentMenu = () => {
     { name: "Pre-Round3", path: "pre-round3" },
     { name: "Round3", path: "round3" },
     { name: "Pre-Test", path: "pre-test" },
-    { name: "Lab", path: "lab" },
     { name: "Test", path: "test" },
   ];
 
