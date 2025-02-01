@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   LineChart,
   Line,
@@ -82,6 +82,10 @@ const BreathingMonitor = () => {
   const [bluetoothSupported, setBluetoothSupported] = useState(true);
   const [libraryLoaded, setLibraryLoaded] = useState(false);
   const [breathingData, setBreathingData] = useState([]);
+  const audioElement = useRef(new Audio());
+  const hasPlayedAudioRef = useRef(false);
+  const peakThresholdRef = useRef(20);
+  const lastPlayTimeRef = useRef(0);
   const [breathingStats, setBreathingStats] = useState({
     currentRate: 0,
     averageRate: 0,
@@ -102,12 +106,20 @@ const BreathingMonitor = () => {
       setBluetoothSupported(false);
     }
 
-    return () => {
+    // 페이지 새로고침/종료 시 정리
+    const handleBeforeUnload = () => {
       if (gdxDevice) {
         gdxDevice.close();
       }
-      // Clean up script tag
+      cleanupDevice();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      disconnectDevice();
       document.body.removeChild(script);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -118,51 +130,118 @@ const BreathingMonitor = () => {
         throw new Error("Go Direct library not loaded");
       }
 
+      // 이전 연결이 있다면 정리
+      if (gdxDevice) {
+        await gdxDevice.close();
+        setGdxDevice(null);
+        setIsConnected(false);
+      }
+
       // Check if browser supports Bluetooth
       if (!navigator.bluetooth) {
         throw new Error("Bluetooth is not supported by this browser");
       }
 
-      const device = await window.godirect.selectDevice(true); // true for Bluetooth connection
+      const device = await window.godirect.selectDevice(true);
       setGdxDevice(device);
       setIsConnected(true);
 
       device.on("device-closed", () => {
-        setIsConnected(false);
-        setGdxDevice(null);
-        setIsCollecting(false);
+        console.log("Device closed event triggered");
+        cleanupDevice();
       });
     } catch (err) {
       console.error("Failed to connect:", err);
+      cleanupDevice();
     }
   };
 
   const startCollection = () => {
     if (!gdxDevice || !isConnected) return;
 
+    console.log("Starting collection...");
     setIsCollecting(true);
-    setBreathingData([]);
+    setBreathingData([]); // 초기화
 
     gdxDevice.enableDefaultSensors();
     gdxDevice.start(100); // 100ms sampling rate
 
     const sensor = gdxDevice.sensors.find((s) => s.enabled);
     if (sensor) {
+      console.log("Sensor found:", sensor);
+
       sensor.on("value-changed", (sensor) => {
         const timestamp = Date.now();
-        setBreathingData((prev) =>
-          [
-            ...prev,
-            {
-              time: timestamp,
-              value: sensor.value,
-            },
-          ].slice(-100)
-        ); // Keep last 100 data points
+        const newDataPoint = {
+          time: timestamp,
+          value: sensor.value,
+        };
 
-        // Update breathing stats
-        updateBreathingStats(sensor.value);
+        console.log("New data point:", newDataPoint);
+
+        setBreathingData((prev) => {
+          const newData = [...prev, newDataPoint].slice(-100);
+          console.log("Updated breathing data length:", newData.length);
+
+          const mean =
+            newData.reduce((sum, point) => sum + point.value, 0) /
+            newData.length;
+          console.log("Current mean:", mean);
+
+          // 극대점 감지 조건 개선
+          if (
+            newData.length > 5 &&
+            newDataPoint.value < prev[prev.length - 1]?.value &&
+            prev[prev.length - 1]?.value > mean &&
+            prev[prev.length - 1]?.value > peakThresholdRef.current && // 최소 임계값 체크
+            !hasPlayedAudioRef.current &&
+            timestamp - lastPlayTimeRef.current > 1000
+          ) {
+            // 최소 1초 간격
+
+            console.log("극대점 감지! 값:", prev[prev.length - 1]?.value);
+            audioElement.current.src =
+              "https://papago.naver.com/apis/tts/c_lt_clara_2.2.30.0.3.32_164-nvoice_clara_2.2.30.0.3.32_91a33ac6b0a7c4f551f8d6edb2db5039-1727670602445.mp3";
+            audioElement.current.currentTime = 0;
+
+            // 한 번만 재생되도록 Promise 처리
+            const playPromise = audioElement.current.play();
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => {
+                  console.log("사운드 재생 성공");
+                  lastPlayTimeRef.current = timestamp;
+                })
+                .catch((error) => {
+                  console.error("오디오 재생 실패:", error);
+                });
+            }
+
+            hasPlayedAudioRef.current = true;
+
+            // 동적으로 임계값 조정 (옵션)
+            peakThresholdRef.current = Math.max(
+              15,
+              prev[prev.length - 1]?.value * 0.7
+            );
+          } else if (newDataPoint.value < mean) {
+            console.log("초기화: 다음 극대점 감지 준비");
+            hasPlayedAudioRef.current = false;
+          }
+
+          return newData;
+        });
+
+        setBreathingStats((prev) => ({
+          ...prev,
+          currentValue: sensor.value,
+          currentRate: calculateBreathingRate(breathingData),
+          peakValue: Math.max(prev.peakValue, sensor.value),
+          valleyValue: Math.min(prev.valleyValue || sensor.value, sensor.value),
+        }));
       });
+    } else {
+      console.error("No enabled sensor found");
     }
   };
 
@@ -171,15 +250,6 @@ const BreathingMonitor = () => {
       gdxDevice.stop();
     }
     setIsCollecting(false);
-  };
-
-  const updateBreathingStats = (newValue) => {
-    setBreathingStats((prev) => ({
-      ...prev,
-      currentRate: calculateBreathingRate(breathingData),
-      peakValue: Math.max(prev.peakValue, newValue),
-      valleyValue: Math.min(prev.valleyValue || newValue, newValue),
-    }));
   };
 
   const calculateBreathingRate = (data) => {
@@ -206,11 +276,72 @@ const BreathingMonitor = () => {
     return Math.round(breathingRate * 10) / 10;
   };
 
-  const disconnectDevice = () => {
-    if (gdxDevice) {
-      gdxDevice.close();
+  const disconnectDevice = async () => {
+    try {
+      if (gdxDevice) {
+        await gdxDevice.close();
+      }
+    } catch (err) {
+      console.error("Error during disconnect:", err);
+    } finally {
+      cleanupDevice();
     }
   };
+
+  // 장치 정리를 위한 새로운 함수
+  const cleanupDevice = () => {
+    setIsConnected(false);
+    setIsCollecting(false);
+    setGdxDevice(null);
+    setBreathingData([]);
+    setBreathingStats({
+      currentRate: 0,
+      averageRate: 0,
+      peakValue: 0,
+      valleyValue: 0,
+    });
+
+    // 블루투스 연결 강제 해제 시도
+    if (navigator.bluetooth && navigator.bluetooth.getDevices) {
+      navigator.bluetooth
+        .getDevices()
+        .then((devices) => {
+          devices.forEach((device) => {
+            if (device.gatt.connected) {
+              device.gatt.disconnect();
+            }
+          });
+        })
+        .catch((err) =>
+          console.error("Error cleaning up bluetooth devices:", err)
+        );
+    }
+  };
+
+  useEffect(() => {
+    // 오디오 객체 초기화
+    audioElement.current = new Audio();
+    audioElement.current.addEventListener("loadeddata", () => {
+      console.log("오디오 로드 완료");
+    });
+
+    audioElement.current.addEventListener("play", () => {
+      console.log("오디오 재생 시작");
+    });
+
+    audioElement.current.addEventListener("error", (e) => {
+      console.error("오디오 에러:", e);
+    });
+
+    return () => {
+      if (audioElement.current) {
+        audioElement.current.pause();
+        audioElement.current.removeEventListener("loadeddata", () => {});
+        audioElement.current.removeEventListener("play", () => {});
+        audioElement.current.removeEventListener("error", () => {});
+      }
+    };
+  }, []);
 
   return (
     <Container>
