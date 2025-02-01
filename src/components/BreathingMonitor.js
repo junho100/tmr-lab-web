@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import { Alert, AlertDescription, AlertIcon } from "./Alert";
 import styled from "styled-components";
+import { useParams, useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   padding: 20px;
@@ -92,6 +93,12 @@ const BreathingMonitor = () => {
     peakValue: 0,
     valleyValue: 0,
   });
+  const [words, setWords] = useState([]);
+  const currentWordIndexRef = useRef(0);
+  const { userId } = useParams();
+  const navigate = useNavigate();
+  const lastApiCallTimeRef = useRef(0);
+  const API_CALL_INTERVAL = 100;
 
   useEffect(() => {
     // Load godirect library
@@ -123,6 +130,33 @@ const BreathingMonitor = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const fetchWords = async () => {
+      try {
+        const apiUrl = process.env.REACT_APP_API_URL;
+        const response = await fetch(`${apiUrl}/api/labs/cue?id=${userId}`);
+
+        if (response.status === 404) {
+          alert("사전 테스트 결과가 존재하지 않습니다.");
+          navigate(`/${userId}/menu`);
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("단어 리스트를 가져오는데 실패했습니다");
+        }
+
+        const data = await response.json();
+        console.log("받아온 단어 목록:", data.words);
+        setWords(data.words);
+      } catch (error) {
+        console.error("단어 리스트 가져오기 오류:", error);
+      }
+    };
+
+    fetchWords();
+  }, [userId]);
 
   const connectDevice = async () => {
     try {
@@ -156,6 +190,31 @@ const BreathingMonitor = () => {
     }
   };
 
+  const sendBreathingData = async (value) => {
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      if (!apiUrl) return;
+
+      const response = await fetch(`${apiUrl}/api/labs/breathing`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id_for_login: userId,
+          average_volume: value,
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        console.error("호흡 데이터 전송 실패:", response.status);
+      }
+    } catch (error) {
+      console.error("호흡 데이터 전송 중 오류:", error);
+    }
+  };
+
   const startCollection = () => {
     if (!gdxDevice || !isConnected) return;
 
@@ -177,7 +236,10 @@ const BreathingMonitor = () => {
           value: sensor.value,
         };
 
-        console.log("New data point:", newDataPoint);
+        if (timestamp - lastApiCallTimeRef.current >= API_CALL_INTERVAL) {
+          sendBreathingData(sensor.value);
+          lastApiCallTimeRef.current = timestamp;
+        }
 
         setBreathingData((prev) => {
           const newData = [...prev, newDataPoint].slice(-100);
@@ -197,26 +259,8 @@ const BreathingMonitor = () => {
             !hasPlayedAudioRef.current &&
             timestamp - lastPlayTimeRef.current > 1000
           ) {
-            // 최소 1초 간격
-
-            console.log("극대점 감지! 값:", prev[prev.length - 1]?.value);
-            audioElement.current.src =
-              "https://papago.naver.com/apis/tts/c_lt_clara_2.2.30.0.3.32_164-nvoice_clara_2.2.30.0.3.32_91a33ac6b0a7c4f551f8d6edb2db5039-1727670602445.mp3";
-            audioElement.current.currentTime = 0;
-
-            // 한 번만 재생되도록 Promise 처리
-            const playPromise = audioElement.current.play();
-            if (playPromise !== undefined) {
-              playPromise
-                .then(() => {
-                  console.log("사운드 재생 성공");
-                  lastPlayTimeRef.current = timestamp;
-                })
-                .catch((error) => {
-                  console.error("오디오 재생 실패:", error);
-                });
-            }
-
+            playNextWord();
+            lastPlayTimeRef.current = timestamp;
             hasPlayedAudioRef.current = true;
 
             // 동적으로 임계값 조정 (옵션)
@@ -342,6 +386,55 @@ const BreathingMonitor = () => {
       }
     };
   }, []);
+
+  const playNextWord = () => {
+    if (words.length === 0) return;
+
+    const currentWord = words[currentWordIndexRef.current];
+    console.log("현재 재생할 단어:", currentWord);
+    console.log("현재 단어 인덱스:", currentWordIndexRef.current);
+
+    audioElement.current.src = `${process.env.PUBLIC_URL}/${currentWord}.mp3`;
+
+    const playPromise = audioElement.current.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          console.log(`'${currentWord}' 재생 성공`);
+          sendSoundCueData(currentWord);
+          const nextIndex = (currentWordIndexRef.current + 1) % words.length;
+          currentWordIndexRef.current = nextIndex;
+        })
+        .catch((error) => {
+          console.error("오디오 재생 실패:", error);
+        });
+    }
+  };
+
+  const sendSoundCueData = async (currentWord) => {
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      if (!apiUrl) return;
+
+      const response = await fetch(`${apiUrl}/api/labs/cue`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id_for_login: userId,
+          target_word: currentWord,
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        console.error("사운드 큐 데이터 전송 실패:", response.status);
+      }
+    } catch (error) {
+      console.error("사운드 큐 데이터 전송 중 오류:", error);
+    }
+  };
 
   return (
     <Container>
