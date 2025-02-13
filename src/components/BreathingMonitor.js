@@ -99,6 +99,8 @@ const BreathingMonitor = () => {
   const navigate = useNavigate();
   const lastApiCallTimeRef = useRef(0);
   const API_CALL_INTERVAL = 100;
+  const soundCueStartTimeRef = useRef(null);
+  const DELAY_BEFORE_SOUND = 90 * 60 * 1000; 
 
   useEffect(() => {
     // Load godirect library
@@ -221,6 +223,7 @@ const BreathingMonitor = () => {
     console.log("Starting collection...");
     setIsCollecting(true);
     setBreathingData([]); // 초기화
+    soundCueStartTimeRef.current = Date.now(); // 시작 시간 기록
 
     gdxDevice.enableDefaultSensors();
     gdxDevice.start(100); // 100ms sampling rate
@@ -250,12 +253,13 @@ const BreathingMonitor = () => {
             newData.length;
           console.log("Current mean:", mean);
 
-          // 극대점 감지 조건 개선
+          // 5분이 지났는지 확인하고 극대점 감지 조건 체크
           if (
+            timestamp - soundCueStartTimeRef.current >= DELAY_BEFORE_SOUND && // 5분 경과 확인
             newData.length > 5 &&
             newDataPoint.value < prev[prev.length - 1]?.value &&
             prev[prev.length - 1]?.value > mean &&
-            prev[prev.length - 1]?.value > peakThresholdRef.current && // 최소 임계값 체크
+            prev[prev.length - 1]?.value > peakThresholdRef.current &&
             !hasPlayedAudioRef.current &&
             timestamp - lastPlayTimeRef.current > 1000
           ) {
@@ -263,13 +267,11 @@ const BreathingMonitor = () => {
             lastPlayTimeRef.current = timestamp;
             hasPlayedAudioRef.current = true;
 
-            // 동적으로 임계값 조정 (옵션)
             peakThresholdRef.current = Math.max(
               15,
               prev[prev.length - 1]?.value * 0.7
             );
           } else if (newDataPoint.value < mean) {
-            console.log("초기화: 다음 극대점 감지 준비");
             hasPlayedAudioRef.current = false;
           }
 
