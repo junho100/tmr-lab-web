@@ -100,7 +100,7 @@ const BreathingMonitor = () => {
   const lastApiCallTimeRef = useRef(0);
   const API_CALL_INTERVAL = 100;
   const soundCueStartTimeRef = useRef(null);
-  const DELAY_BEFORE_SOUND = 90 * 60 * 1000; 
+  const DELAY_BEFORE_SOUND = 90 * 60 * 1000;
 
   useEffect(() => {
     // Load godirect library
@@ -226,7 +226,7 @@ const BreathingMonitor = () => {
     soundCueStartTimeRef.current = Date.now(); // 시작 시간 기록
 
     gdxDevice.enableDefaultSensors();
-    gdxDevice.start(100); // 100ms sampling rate
+    gdxDevice.start(500); // 500ms sampling rate
 
     const sensor = gdxDevice.sensors.find((s) => s.enabled);
     if (sensor) {
