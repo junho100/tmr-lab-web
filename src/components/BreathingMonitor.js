@@ -226,7 +226,7 @@ const BreathingMonitor = () => {
     soundCueStartTimeRef.current = Date.now(); // 시작 시간 기록
 
     gdxDevice.enableDefaultSensors();
-    gdxDevice.start(500); // 500ms sampling rate
+    gdxDevice.start(100); // 100ms sampling rate
 
     const sensor = gdxDevice.sensors.find((s) => s.enabled);
     if (sensor) {
