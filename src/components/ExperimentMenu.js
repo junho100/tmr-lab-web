@@ -5,15 +5,14 @@ const ExperimentMenu = () => {
   const navigate = useNavigate();
   const { userId } = useParams();
   const options = [
-    { name: "Pre-Round1", path: "pre-round1" },
-    { name: "Round1", path: "round1" },
-    { name: "Pre-Round2", path: "pre-round2" },
-    { name: "Round2", path: "round2" },
-    { name: "Pre-Round3", path: "pre-round3" },
-    { name: "Round3", path: "round3" },
-    { name: "Pre-Test", path: "pre-test" },
-    { name: "Test", path: "test" },
-    { name: "Breathing Monitor", path: "breathing-monitor" },
+    { name: "학습 Round1 사전연습", path: "pre-round1" },
+    { name: "학습 Round1", path: "round1" },
+    { name: "학습 Round2 사전연습", path: "pre-round2" },
+    { name: "학습 Round2", path: "round2" },
+    { name: "수면 전 테스트 연습", path: "pre-round3" },
+    { name: "수면 전 테스트", path: "pre-test" },
+    { name: "수면 후 테스트", path: "test" },
+    { name: "실험", path: "breathing-monitor" },
   ];
 
   const handleSelectOption = (path) => {

@@ -9,6 +9,7 @@ const Test = () => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [userInput, setUserInput] = useState("");
   const [results, setResults] = useState([]);
+  const [timeLeft, setTimeLeft] = useState(5);
 
   // 스페이스바 이벤트 핸들러 수정
   useEffect(() => {
@@ -50,6 +51,36 @@ const Test = () => {
       window.removeEventListener("beforeunload", preventRefresh);
     };
   }, []);
+
+  // 타이머 로직 추가
+  useEffect(() => {
+    let timer;
+    let countdownTimer;
+
+    if (stage === "question") {
+      setTimeLeft(5);
+      setUserInput("");
+
+      countdownTimer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownTimer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      timer = setTimeout(() => {
+        handleNextWord();
+      }, 5000);
+
+      return () => {
+        clearInterval(countdownTimer);
+        clearTimeout(timer);
+      };
+    }
+  }, [stage, currentWordIndex]);
 
   // 새로운 함수들 추가
   const handleInputChange = (e) => {
@@ -139,6 +170,7 @@ const Test = () => {
         }}
         autoFocus
       />
+      <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
       <button
         onClick={handleNextWord}
         style={{
