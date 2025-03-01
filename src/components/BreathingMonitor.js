@@ -150,7 +150,6 @@ const BreathingMonitor = () => {
         }
 
         const data = await response.json();
-        console.log("받아온 단어 목록:", data.words);
         setWords(data.words);
       } catch (error) {
         console.error("단어 리스트 가져오기 오류:", error);
@@ -230,8 +229,6 @@ const BreathingMonitor = () => {
 
     const sensor = gdxDevice.sensors.find((s) => s.enabled);
     if (sensor) {
-      console.log("Sensor found:", sensor);
-
       sensor.on("value-changed", (sensor) => {
         const timestamp = Date.now();
         const newDataPoint = {
@@ -246,12 +243,10 @@ const BreathingMonitor = () => {
 
         setBreathingData((prev) => {
           const newData = [...prev, newDataPoint].slice(-100);
-          console.log("Updated breathing data length:", newData.length);
 
           const mean =
             newData.reduce((sum, point) => sum + point.value, 0) /
             newData.length;
-          console.log("Current mean:", mean);
 
           // 5분이 지났는지 확인하고 극대점 감지 조건 체크
           if (
@@ -393,8 +388,6 @@ const BreathingMonitor = () => {
     if (words.length === 0) return;
 
     const currentWord = words[currentWordIndexRef.current];
-    console.log("현재 재생할 단어:", currentWord);
-    console.log("현재 단어 인덱스:", currentWordIndexRef.current);
 
     audioElement.current.src = `${process.env.PUBLIC_URL}/${currentWord}.mp3`;
 
@@ -402,7 +395,6 @@ const BreathingMonitor = () => {
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
-          console.log(`'${currentWord}' 재생 성공`);
           sendSoundCueData(currentWord);
           const nextIndex = (currentWordIndexRef.current + 1) % words.length;
           currentWordIndexRef.current = nextIndex;
