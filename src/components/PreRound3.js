@@ -34,7 +34,7 @@ const PreRound3 = () => {
 
     if (stage === "question") {
       const audio = new Audio(
-        "https://papago.naver.com/apis/tts/c_lt_clara_2.2.30.0.3.32_164-nvoice_clara_2.2.30.0.3.32_91a33ac6b0a7c4f551f8d6edb2db5039-1727670602445.mp3"
+        "https://papago.naver.com/apis/tts/c_lt_kyuri_2.2.35.0.3.37_368-nvoice_kyuri_2.2.35.0.3.37_c7a3814b781f76d6bf5d4bf851ac0537-1740837914740"
       );
       audio.play();
 
