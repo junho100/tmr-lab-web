@@ -8,7 +8,7 @@ const Round2 = () => {
   const [stage, setStage] = useState("instruction");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(7);
   const [userInput, setUserInput] = useState("");
 
   // 스페이스바 이벤트 핸들러
@@ -43,7 +43,7 @@ const Round2 = () => {
       audio.play();
 
       // 타이머 초기화
-      setTimeLeft(5);
+      setTimeLeft(7);
       setUserInput("");
 
       // 카운트다운 타이머

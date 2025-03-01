@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const PreRound1 = () => {
   const { userId } = useParams();
   const [stage, setStage] = useState("instruction");
-  const [timeLeft, setTimeLeft] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(7);
   const [userInput, setUserInput] = useState("");
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ const PreRound1 = () => {
     let countdownTimer;
 
     if (stage === "word") {
-      setTimeLeft(5);
+      setTimeLeft(7);
 
       // 오디오 재생
       const audio = new Audio(
@@ -43,7 +43,7 @@ const PreRound1 = () => {
 
       timer = setTimeout(() => {
         navigate(`/${userId}/menu`);
-      }, 5000);
+      }, 7000);
     }
 
     return () => {

@@ -5,7 +5,7 @@ const PreRound3 = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [stage, setStage] = useState("instruction");
-  const [timeLeft, setTimeLeft] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(7);
   const [userInput, setUserInput] = useState("");
 
   // 스페이스바 이벤트 핸들러
@@ -38,7 +38,7 @@ const PreRound3 = () => {
       );
       audio.play();
 
-      setTimeLeft(5);
+      setTimeLeft(7);
 
       countdownTimer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
@@ -46,7 +46,7 @@ const PreRound3 = () => {
 
       timer = setTimeout(() => {
         navigate(`/${userId}/menu`);
-      }, 5000);
+      }, 7000);
     }
 
     return () => {

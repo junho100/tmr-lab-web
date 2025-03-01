@@ -9,7 +9,7 @@ const Round1 = () => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [audio] = useState(new Audio());
   const [isCompleted, setIsCompleted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(7);
   const [userInput, setUserInput] = useState("");
 
   // playAudio 함수 유지
@@ -45,7 +45,7 @@ const Round1 = () => {
     let countdownTimer;
 
     if (stage === "word") {
-      setTimeLeft(5);
+      setTimeLeft(7);
       setUserInput("");
 
       countdownTimer = setInterval(() => {
@@ -70,7 +70,7 @@ const Round1 = () => {
           setStage("completed");
           setIsCompleted(true);
         }
-      }, 5000);
+      }, 7000);
 
       return () => {
         clearInterval(countdownTimer);

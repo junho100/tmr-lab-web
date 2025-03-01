@@ -9,7 +9,7 @@ const Test = () => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [userInput, setUserInput] = useState("");
   const [results, setResults] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(7);
 
   // 스페이스바 이벤트 핸들러 수정
   useEffect(() => {
@@ -58,7 +58,7 @@ const Test = () => {
     let countdownTimer;
 
     if (stage === "question") {
-      setTimeLeft(5);
+      setTimeLeft(7);
       setUserInput("");
 
       countdownTimer = setInterval(() => {
@@ -73,7 +73,7 @@ const Test = () => {
 
       timer = setTimeout(() => {
         handleNextWord();
-      }, 5000);
+      }, 7000);
 
       return () => {
         clearInterval(countdownTimer);
