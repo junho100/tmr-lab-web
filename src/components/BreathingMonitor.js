@@ -247,10 +247,8 @@ const BreathingMonitor = () => {
           const mean =
             newData.reduce((sum, point) => sum + point.value, 0) /
             newData.length;
-
-          // 5분이 지났는지 확인하고 극대점 감지 조건 체크
           if (
-            timestamp - soundCueStartTimeRef.current >= DELAY_BEFORE_SOUND && // 5분 경과 확인
+            timestamp - soundCueStartTimeRef.current >= DELAY_BEFORE_SOUND &&
             newData.length > 5 &&
             newDataPoint.value < prev[prev.length - 1]?.value &&
             prev[prev.length - 1]?.value > mean &&
