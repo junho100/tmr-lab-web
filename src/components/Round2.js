@@ -10,6 +10,25 @@ const Round2 = () => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(7);
   const [userInput, setUserInput] = useState("");
+  const [audio] = useState(new Audio());
+
+  // 오디오 재생 함수 추가
+  const playAudio = async () => {
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.src = mockWords[currentWordIndex].audioUrl;
+
+      await new Promise((resolve) => {
+        audio.oncanplaythrough = resolve;
+        audio.load();
+      });
+
+      await audio.play();
+    } catch (error) {
+      console.error("오디오 재생 중 오류:", error);
+    }
+  };
 
   // 스페이스바 이벤트 핸들러
   useEffect(() => {
@@ -38,9 +57,8 @@ const Round2 = () => {
     let countdownTimer;
 
     if (stage === "question") {
-      // 오디오 재생
-      const audio = new Audio(mockWords[currentWordIndex].audioUrl);
-      audio.play();
+      // 오디오 재생 함수 호출
+      playAudio();
 
       // 타이머 초기화
       setTimeLeft(7);
