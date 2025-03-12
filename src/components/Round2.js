@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { mockWords } from "./Words";
 
@@ -10,23 +10,42 @@ const Round2 = () => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(7);
   const [userInput, setUserInput] = useState("");
-  const [audio] = useState(new Audio());
+  const audioRef = useRef(new Audio());
+  const inputRef = useRef(null);
+  const timerRef = useRef(null);
 
-  // 오디오 재생 함수 추가
-  const playAudio = async () => {
+  // 오디오 재생 함수
+  const playAudio = () => {
     try {
+      const audio = audioRef.current;
       audio.pause();
       audio.currentTime = 0;
       audio.src = mockWords[currentWordIndex].audioUrl;
-
-      await new Promise((resolve) => {
-        audio.oncanplaythrough = resolve;
-        audio.load();
+      audio.load();
+      audio.play().catch((error) => {
+        console.error("오디오 재생 실패:", error);
       });
-
-      await audio.play();
     } catch (error) {
       console.error("오디오 재생 중 오류:", error);
+    }
+  };
+
+  // 타이머 정리 함수
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  // 다음 단어로 이동
+  const moveToNextWord = () => {
+    if (currentWordIndex < mockWords.length - 1) {
+      setCurrentWordIndex((prev) => prev + 1);
+      setStage("cross");
+    } else {
+      setStage("completed");
+      setIsCompleted(true);
     }
   };
 
@@ -36,9 +55,6 @@ const Round2 = () => {
       if (event.code === "Space") {
         if (stage === "instruction") {
           setStage("cross");
-          setTimeout(() => {
-            setStage("question");
-          }, 500);
         } else if (isCompleted) {
           navigate(`/${userId}/menu`);
         }
@@ -51,74 +67,71 @@ const Round2 = () => {
     };
   }, [stage, isCompleted, navigate, userId]);
 
-  // 단어 진행 및 타이밍 제어
+  // 단계 변경 처리
   useEffect(() => {
-    let timer;
-    let countdownTimer;
+    clearTimer(); // 이전 타이머 정리
 
-    if (stage === "question") {
-      // 오디오 재생 함수 호출
-      playAudio();
-
-      // 타이머 초기화
+    if (stage === "cross") {
+      // 십자가 표시 후 질문 단계로
+      timerRef.current = setTimeout(() => {
+        setStage("question");
+      }, 500);
+    } else if (stage === "question") {
+      // 질문 단계 시작
       setTimeLeft(7);
       setUserInput("");
+      playAudio();
 
-      // 카운트다운 타이머
-      countdownTimer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            // 시간이 다 되면 자동으로 정답 표시
-            setStage("answer");
-            clearInterval(countdownTimer);
+      // 입력 필드에 포커스
+      if (inputRef.current) {
+        setTimeout(() => {
+          inputRef.current.focus();
+        }, 100);
+      }
 
-            // 정답 표시 후 2초 뒤에 다음 단어로
-            timer = setTimeout(() => {
-              if (currentWordIndex < mockWords.length - 1) {
-                setCurrentWordIndex((prev) => prev + 1);
-                setStage("cross");
-                setTimeout(() => {
-                  setStage("question");
-                }, 500);
-              } else {
-                setStage("completed");
-                setIsCompleted(true);
-              }
-            }, 2000);
-          }
-          return prev - 1;
-        });
+      // 7초 후 정답 표시
+      timerRef.current = setTimeout(() => {
+        setStage("answer");
+      }, 7000);
+    } else if (stage === "answer") {
+      // 정답 표시 후 2초 뒤에 다음 단어로
+      timerRef.current = setTimeout(() => {
+        moveToNextWord();
+      }, 2000);
+    }
+
+    return clearTimer; // 컴포넌트 언마운트 또는 의존성 변경 시 타이머 정리
+  }, [stage, currentWordIndex, userId]);
+
+  // 타이머 카운트다운
+  useEffect(() => {
+    let interval = null;
+
+    if (stage === "question" && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
       }, 1000);
     }
 
     return () => {
-      if (timer) clearTimeout(timer);
-      if (countdownTimer) clearInterval(countdownTimer);
+      if (interval) clearInterval(interval);
     };
-  }, [stage, currentWordIndex]);
+  }, [stage, timeLeft]);
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
   };
 
   const handleSubmit = () => {
-    // 타이머 중지
-    setTimeLeft(0);
+    clearTimer(); // 진행 중인 타이머 정리
     setStage("answer");
+  };
 
-    // 정답 표시 후 2초 뒤에 다음 단어로
-    setTimeout(() => {
-      if (currentWordIndex < mockWords.length - 1) {
-        setCurrentWordIndex((prev) => prev + 1);
-        setStage("cross");
-        setTimeout(() => {
-          setStage("question");
-        }, 500);
-      } else {
-        setStage("completed");
-        setIsCompleted(true);
-      }
-    }, 2000);
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmit();
+    }
   };
 
   const progress = ((currentWordIndex + 1) / mockWords.length) * 100;
@@ -209,10 +222,11 @@ const Round2 = () => {
           <div style={{ textAlign: "center" }}>
             <p style={{ fontSize: "100px", marginBottom: "20px" }}>?</p>
             <input
+              ref={inputRef}
               type="text"
               value={userInput}
               onChange={handleInputChange}
-              onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+              onKeyPress={handleKeyPress}
               style={{
                 fontSize: "24px",
                 padding: "10px",
