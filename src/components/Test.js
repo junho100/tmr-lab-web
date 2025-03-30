@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { mockWords } from "./Words";
 
@@ -9,8 +9,10 @@ const Test = () => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [userInput, setUserInput] = useState("");
   const [results, setResults] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(7);
+  const [timeLeft, setTimeLeft] = useState(10);
   const [shuffledWords, setShuffledWords] = useState([]);
+  const audioRef = useRef(null);
+  const audioTimerRef = useRef(null);
 
   // 단어 배열 섞기
   useEffect(() => {
@@ -35,13 +37,51 @@ const Test = () => {
     };
   }, [stage]);
 
+  // 오디오 정리 함수
+  const cleanupAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    if (audioTimerRef.current) {
+      clearTimeout(audioTimerRef.current);
+      audioTimerRef.current = null;
+    }
+  };
+
   // 단어 진행 및 타이밍 제어 수정
   useEffect(() => {
     if (stage === "question") {
-      setTimeout(() => {
-        const audio = new Audio(shuffledWords[currentWordIndex].audioUrl);
-        audio.play();
-      }, 500);
+      const playAudio = async () => {
+        try {
+          // 이전 오디오 정리
+          cleanupAudio();
+
+          // 새로운 오디오 생성 및 재생
+          audioRef.current = new Audio(
+            shuffledWords[currentWordIndex].audioUrl
+          );
+          await audioRef.current.play();
+
+          // 5초 후 오디오 재생
+          audioTimerRef.current = setTimeout(async () => {
+            if (audioRef.current) {
+              try {
+                await audioRef.current.play();
+              } catch (error) {
+                console.error("두 번째 오디오 재생 실패:", error);
+              }
+            }
+          }, 5000);
+        } catch (error) {
+          console.error("오디오 재생 실패:", error);
+        }
+      };
+
+      setTimeout(playAudio, 500);
+
+      return cleanupAudio; // 컴포넌트 언마운트 또는 의존성 변경 시 정리
     }
   }, [stage, currentWordIndex, shuffledWords]);
 
@@ -65,7 +105,7 @@ const Test = () => {
     let countdownTimer;
 
     if (stage === "question") {
-      setTimeLeft(7);
+      setTimeLeft(10);
       setUserInput("");
 
       countdownTimer = setInterval(() => {
@@ -80,7 +120,7 @@ const Test = () => {
 
       timer = setTimeout(() => {
         handleNextWord();
-      }, 7000);
+      }, 10000);
 
       return () => {
         clearInterval(countdownTimer);
