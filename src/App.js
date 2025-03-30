@@ -18,6 +18,7 @@ import PreTest from "./components/PreTest";
 import Test from "./components/Test";
 import PreTestResult from "./components/PreTestResult";
 import BreathingMonitor from "./components/BreathingMonitor";
+import BreathingMonitorTester from "./components/BreathingMonitorTester";
 const App = () => {
   return (
     <Router basename={process.env.PUBLIC_URL}>
@@ -45,6 +46,7 @@ const AuthenticatedRoutes = () => {
       <Route path="test" element={<Test />} />
       <Route path="pretest-result" element={<PreTestResult />} />
       <Route path="breathing-monitor" element={<BreathingMonitor />} />
+      <Route path="breathing-monitor-logic-test" element={<BreathingMonitorTester />} />
       <Route path="*" element={<Navigate to="menu" replace />} />
     </Routes>
   );

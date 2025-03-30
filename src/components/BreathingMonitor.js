@@ -12,6 +12,10 @@ import { Alert, AlertDescription, AlertIcon } from "./Alert";
 import styled from "styled-components";
 import { useParams, useNavigate } from "react-router-dom";
 
+// 호흡 역치 관련 상수
+const WINDOW_SIZE = 60; // 역치 계산에 사용할 데이터 윈도우 크기
+const THRESHOLD_FACTOR = 1.2; // 평균 대비 역치 팩터 (필요시 조정)
+
 const Container = styled.div`
   padding: 20px;
   max-width: 1200px;
@@ -85,13 +89,14 @@ const BreathingMonitor = () => {
   const [breathingData, setBreathingData] = useState([]);
   const audioElement = useRef(new Audio());
   const hasPlayedAudioRef = useRef(false);
-  const peakThresholdRef = useRef(20);
+  const thresholdRef = useRef(null);
   const lastPlayTimeRef = useRef(0);
   const [breathingStats, setBreathingStats] = useState({
     currentRate: 0,
-    averageRate: 0,
+    currentValue: 0,
     peakValue: 0,
     valleyValue: 0,
+    currentThreshold: 0,
   });
   const [words, setWords] = useState([]);
   const currentWordIndexRef = useRef(0);
@@ -216,12 +221,30 @@ const BreathingMonitor = () => {
     }
   };
 
+  // 윈도우 평균 계산 함수
+  const calculateWindowMean = (data) => {
+    if (data.length === 0) return 0;
+    return data.reduce((sum, point) => sum + point.value, 0) / data.length;
+  };
+
+  // 피크 감지 함수
+  const detectPeak = (data, currentValue) => {
+    if (data.length < 4) return false;
+    
+    const previousValue = data[data.length - 2].value;
+    const beforePreviousValue = data[data.length - 3].value;
+    
+    // 이전 값이 현재 값보다 크고, 이전 값이 그 이전 값보다 크면 피크로 간주
+    return previousValue > currentValue && previousValue > beforePreviousValue;
+  };
+
   const startCollection = () => {
     if (!gdxDevice || !isConnected) return;
 
     console.log("Starting collection...");
     setIsCollecting(true);
     setBreathingData([]); // 초기화
+    thresholdRef.current = null;
     soundCueStartTimeRef.current = Date.now(); // 시작 시간 기록
 
     gdxDevice.enableDefaultSensors();
@@ -239,45 +262,55 @@ const BreathingMonitor = () => {
         if (timestamp - lastApiCallTimeRef.current >= API_CALL_INTERVAL) {
           sendBreathingData(sensor.value);
           lastApiCallTimeRef.current = timestamp;
+          
+          setBreathingData((prev) => {
+            const newData = [...prev, newDataPoint].slice(-100);
+            
+            // 충분한 데이터가 있는 경우에만 계산 수행
+            if (newData.length < WINDOW_SIZE) return newData;
+            
+            // 최근 데이터 윈도우
+            const recentWindow = newData.slice(-WINDOW_SIZE);
+            
+            // 윈도우 평균 계산
+            const mean = calculateWindowMean(recentWindow);
+            
+            // 역치 계산: 평균 * 팩터
+            const newThreshold = mean * THRESHOLD_FACTOR;
+            thresholdRef.current = newThreshold;
+            
+            // 피크 감지
+            if (detectPeak(newData, newDataPoint.value)) {
+              const peakValue = prev[prev.length - 1]?.value;
+              
+              // 피크가 역치를 초과하고 아직 사운드를 재생하지 않았으며 일정 시간이 지났을 때
+              if (
+                timestamp - soundCueStartTimeRef.current >= DELAY_BEFORE_SOUND &&
+                peakValue > newThreshold &&
+                !hasPlayedAudioRef.current &&
+                timestamp - lastPlayTimeRef.current > 1000
+              ) {
+                playNextWord();
+                lastPlayTimeRef.current = timestamp;
+                hasPlayedAudioRef.current = true;
+              }
+            } else if (newDataPoint.value < mean) {
+              // 평균 이하로 내려가면 다음 피크에서 다시 소리를 재생할 수 있도록 함
+              hasPlayedAudioRef.current = false;
+            }
+            
+            return newData;
+          });
+          
+          setBreathingStats((prev) => ({
+            ...prev,
+            currentValue: sensor.value,
+            currentRate: calculateBreathingRate(breathingData),
+            peakValue: Math.max(prev.peakValue, sensor.value),
+            valleyValue: Math.min(prev.valleyValue || sensor.value, sensor.value),
+            currentThreshold: thresholdRef.current || "계산 중...",
+          }));
         }
-
-        setBreathingData((prev) => {
-          const newData = [...prev, newDataPoint].slice(-100);
-
-          const mean =
-            newData.reduce((sum, point) => sum + point.value, 0) /
-            newData.length;
-          if (
-            timestamp - soundCueStartTimeRef.current >= DELAY_BEFORE_SOUND &&
-            newData.length > 5 &&
-            newDataPoint.value < prev[prev.length - 1]?.value &&
-            prev[prev.length - 1]?.value > mean &&
-            prev[prev.length - 1]?.value > peakThresholdRef.current &&
-            !hasPlayedAudioRef.current &&
-            timestamp - lastPlayTimeRef.current > 1000
-          ) {
-            playNextWord();
-            lastPlayTimeRef.current = timestamp;
-            hasPlayedAudioRef.current = true;
-
-            peakThresholdRef.current = Math.max(
-              15,
-              prev[prev.length - 1]?.value * 0.7
-            );
-          } else if (newDataPoint.value < mean) {
-            hasPlayedAudioRef.current = false;
-          }
-
-          return newData;
-        });
-
-        setBreathingStats((prev) => ({
-          ...prev,
-          currentValue: sensor.value,
-          currentRate: calculateBreathingRate(breathingData),
-          peakValue: Math.max(prev.peakValue, sensor.value),
-          valleyValue: Math.min(prev.valleyValue || sensor.value, sensor.value),
-        }));
       });
     } else {
       console.error("No enabled sensor found");
@@ -335,9 +368,10 @@ const BreathingMonitor = () => {
     setBreathingData([]);
     setBreathingStats({
       currentRate: 0,
-      averageRate: 0,
+      currentValue: 0,
       peakValue: 0,
       valleyValue: 0,
+      currentThreshold: 0,
     });
 
     // 블루투스 연결 강제 해제 시도
@@ -511,15 +545,21 @@ const BreathingMonitor = () => {
       <StatsPanel>
         <StatCard>
           <h3>Current Breathing Rate</h3>
-          <p>{breathingStats.currentRate} BPM</p>
+          <p>{breathingStats.currentRate || 0} BPM</p>
         </StatCard>
         <StatCard>
           <h3>Peak Value</h3>
-          <p>{breathingStats.peakValue.toFixed(2)}</p>
+          <p>{(breathingStats.peakValue || 0).toFixed(2)}</p>
         </StatCard>
         <StatCard>
           <h3>Valley Value</h3>
-          <p>{breathingStats.valleyValue.toFixed(2)}</p>
+          <p>{(breathingStats.valleyValue || 0).toFixed(2)}</p>
+        </StatCard>
+        <StatCard>
+          <h3>Current Threshold</h3>
+          <p>{typeof breathingStats.currentThreshold === 'number' 
+              ? breathingStats.currentThreshold.toFixed(2) 
+              : breathingStats.currentThreshold}</p>
         </StatCard>
       </StatsPanel>
 
