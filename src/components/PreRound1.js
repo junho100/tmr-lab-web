@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const PreRound1 = () => {
   const { userId } = useParams();
   const [stage, setStage] = useState("instruction");
-  const [timeLeft, setTimeLeft] = useState(7);
+  const [timeLeft, setTimeLeft] = useState(8);
   const [userInput, setUserInput] = useState("");
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ const PreRound1 = () => {
     let countdownTimer;
 
     if (stage === "word") {
-      setTimeLeft(7);
+      setTimeLeft(8);
 
       // 오디오 재생
       const audio = new Audio(
@@ -37,13 +37,18 @@ const PreRound1 = () => {
       );
       audio.play();
 
+      // 4초 후 오디오 재생
+      setTimeout(() => {
+        audio.play();
+      }, 4000);
+
       countdownTimer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
 
       timer = setTimeout(() => {
         navigate(`/${userId}/menu`);
-      }, 7000);
+      }, 8000);
     }
 
     return () => {
@@ -54,10 +59,6 @@ const PreRound1 = () => {
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
-  };
-
-  const handleSubmit = () => {
-    navigate(`/${userId}/menu`);
   };
 
   return (
@@ -114,7 +115,6 @@ const PreRound1 = () => {
             type="text"
             value={userInput}
             onChange={handleInputChange}
-            onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
             style={{
               fontSize: "24px",
               padding: "10px",
@@ -125,21 +125,6 @@ const PreRound1 = () => {
             autoFocus
           />
           <p style={{ fontSize: "24px" }}>남은시간: {timeLeft}초</p>
-          <button
-            onClick={handleSubmit}
-            style={{
-              padding: "10px 20px",
-              fontSize: "20px",
-              backgroundColor: "#4CAF50",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-              marginTop: "20px",
-            }}
-          >
-            확인
-          </button>
         </div>
       )}
     </div>

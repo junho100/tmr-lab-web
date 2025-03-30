@@ -9,7 +9,7 @@ const Round1 = () => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [audio] = useState(new Audio());
   const [isCompleted, setIsCompleted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(7);
+  const [timeLeft, setTimeLeft] = useState(8);
   const [userInput, setUserInput] = useState("");
   const [shuffledWords, setShuffledWords] = useState([]);
 
@@ -52,7 +52,7 @@ const Round1 = () => {
     let countdownTimer;
 
     if (stage === "word") {
-      setTimeLeft(7);
+      setTimeLeft(8);
       setUserInput("");
 
       countdownTimer = setInterval(() => {
@@ -77,7 +77,7 @@ const Round1 = () => {
           setStage("completed");
           setIsCompleted(true);
         }
-      }, 7000);
+      }, 8000);
 
       return () => {
         clearInterval(countdownTimer);
@@ -108,6 +108,10 @@ const Round1 = () => {
   useEffect(() => {
     if (stage === "word") {
       playAudio();
+      // 4초 후 오디오 재생
+      setTimeout(() => {
+        playAudio();
+      }, 4000);
     }
     return () => {
       if (audio) {
@@ -119,19 +123,6 @@ const Round1 = () => {
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
-  };
-
-  const handleSubmit = () => {
-    if (currentWordIndex < shuffledWords.length - 1) {
-      setStage("cross");
-      setCurrentWordIndex((prev) => prev + 1);
-      setTimeout(() => {
-        setStage("word");
-      }, 500);
-    } else {
-      setStage("completed");
-      setIsCompleted(true);
-    }
   };
 
   const progress = ((currentWordIndex + 1) / shuffledWords.length) * 100;
@@ -239,7 +230,6 @@ const Round1 = () => {
               type="text"
               value={userInput}
               onChange={handleInputChange}
-              onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
               style={{
                 fontSize: "24px",
                 padding: "10px",
@@ -253,20 +243,6 @@ const Round1 = () => {
             <p style={{ fontSize: "24px", marginBottom: "20px" }}>
               남은시간: {timeLeft}초
             </p>
-            <button
-              onClick={handleSubmit}
-              style={{
-                padding: "10px 20px",
-                fontSize: "20px",
-                backgroundColor: "#4CAF50",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              확인
-            </button>
           </div>
         )}
       </div>

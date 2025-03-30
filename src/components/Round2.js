@@ -8,7 +8,7 @@ const Round2 = () => {
   const [stage, setStage] = useState("instruction");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(7);
+  const [timeLeft, setTimeLeft] = useState(8);
   const [userInput, setUserInput] = useState("");
   const [shuffledWords, setShuffledWords] = useState([]);
   const audioRef = useRef(new Audio());
@@ -85,9 +85,14 @@ const Round2 = () => {
       }, 500);
     } else if (stage === "question") {
       // 질문 단계 시작
-      setTimeLeft(7);
+      setTimeLeft(8);
       setUserInput("");
       playAudio();
+
+      // 4초 후 오디오 재생
+      setTimeout(() => {
+        playAudio();
+      }, 4000);
 
       // 입력 필드에 포커스
       if (inputRef.current) {
@@ -96,10 +101,10 @@ const Round2 = () => {
         }, 100);
       }
 
-      // 7초 후 정답 표시
+      // 8초 후 정답 표시
       timerRef.current = setTimeout(() => {
         setStage("answer");
-      }, 7000);
+      }, 8000);
     } else if (stage === "answer") {
       // 정답 표시 후 2초 뒤에 다음 단어로
       timerRef.current = setTimeout(() => {
@@ -127,18 +132,6 @@ const Round2 = () => {
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
-  };
-
-  const handleSubmit = () => {
-    clearTimer(); // 진행 중인 타이머 정리
-    setStage("answer");
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleSubmit();
-    }
   };
 
   const progress = ((currentWordIndex + 1) / shuffledWords.length) * 100;
@@ -233,7 +226,6 @@ const Round2 = () => {
               type="text"
               value={userInput}
               onChange={handleInputChange}
-              onKeyPress={handleKeyPress}
               style={{
                 fontSize: "24px",
                 padding: "10px",
@@ -247,20 +239,6 @@ const Round2 = () => {
             <p style={{ fontSize: "24px", marginBottom: "20px" }}>
               남은시간: {timeLeft}초
             </p>
-            <button
-              onClick={handleSubmit}
-              style={{
-                padding: "10px 20px",
-                fontSize: "20px",
-                backgroundColor: "#4CAF50",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              확인
-            </button>
           </div>
         )}
 

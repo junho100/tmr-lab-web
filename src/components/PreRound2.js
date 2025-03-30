@@ -5,7 +5,7 @@ const PreRound2 = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [stage, setStage] = useState("instruction");
-  const [timeLeft, setTimeLeft] = useState(7);
+  const [timeLeft, setTimeLeft] = useState(8);
   const [userInput, setUserInput] = useState("");
 
   // 스페이스바 이벤트 핸들러
@@ -37,7 +37,12 @@ const PreRound2 = () => {
       );
       audio.play();
 
-      setTimeLeft(7);
+      // 4초 후 오디오 재생
+      setTimeout(() => {
+        audio.play();
+      }, 4000);
+
+      setTimeLeft(8);
 
       countdownTimer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
@@ -48,7 +53,7 @@ const PreRound2 = () => {
         answerTimer = setTimeout(() => {
           navigate(`/${userId}/menu`);
         }, 2000);
-      }, 7000);
+      }, 8000);
     }
 
     return () => {
@@ -60,13 +65,6 @@ const PreRound2 = () => {
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
-  };
-
-  const handleSubmit = () => {
-    setStage("answer");
-    setTimeout(() => {
-      navigate(`/${userId}/menu`);
-    }, 2000);
   };
 
   return (
@@ -124,7 +122,6 @@ const PreRound2 = () => {
             type="text"
             value={userInput}
             onChange={handleInputChange}
-            onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
             style={{
               fontSize: "24px",
               padding: "10px",
@@ -138,20 +135,6 @@ const PreRound2 = () => {
           <p style={{ fontSize: "24px", marginBottom: "20px" }}>
             남은시간: {timeLeft}초
           </p>
-          <button
-            onClick={handleSubmit}
-            style={{
-              padding: "10px 20px",
-              fontSize: "20px",
-              backgroundColor: "#4CAF50",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-          >
-            확인
-          </button>
         </div>
       )}
 
