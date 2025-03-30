@@ -10,9 +10,16 @@ const Round2 = () => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(7);
   const [userInput, setUserInput] = useState("");
+  const [shuffledWords, setShuffledWords] = useState([]);
   const audioRef = useRef(new Audio());
   const inputRef = useRef(null);
   const timerRef = useRef(null);
+
+  // 단어 배열 섞기
+  useEffect(() => {
+    const shuffled = [...mockWords].sort(() => Math.random() - 0.5);
+    setShuffledWords(shuffled);
+  }, []);
 
   // 오디오 재생 함수
   const playAudio = () => {
@@ -20,7 +27,7 @@ const Round2 = () => {
       const audio = audioRef.current;
       audio.pause();
       audio.currentTime = 0;
-      audio.src = mockWords[currentWordIndex].audioUrl;
+      audio.src = shuffledWords[currentWordIndex].audioUrl;
       audio.load();
       audio.play().catch((error) => {
         console.error("오디오 재생 실패:", error);
@@ -40,7 +47,7 @@ const Round2 = () => {
 
   // 다음 단어로 이동
   const moveToNextWord = () => {
-    if (currentWordIndex < mockWords.length - 1) {
+    if (currentWordIndex < shuffledWords.length - 1) {
       setCurrentWordIndex((prev) => prev + 1);
       setStage("cross");
     } else {
@@ -134,7 +141,7 @@ const Round2 = () => {
     }
   };
 
-  const progress = ((currentWordIndex + 1) / mockWords.length) * 100;
+  const progress = ((currentWordIndex + 1) / shuffledWords.length) * 100;
 
   return (
     <div
@@ -166,7 +173,7 @@ const Round2 = () => {
             />
           </div>
           <p style={{ textAlign: "center" }}>
-            {currentWordIndex + 1} / {mockWords.length}
+            {currentWordIndex + 1} / {shuffledWords.length}
           </p>
         </div>
       )}
@@ -218,7 +225,7 @@ const Round2 = () => {
           </div>
         )}
 
-        {stage === "question" && (
+        {stage === "question" && shuffledWords.length > 0 && (
           <div style={{ textAlign: "center" }}>
             <p style={{ fontSize: "100px", marginBottom: "20px" }}>?</p>
             <input
@@ -257,13 +264,13 @@ const Round2 = () => {
           </div>
         )}
 
-        {stage === "answer" && (
+        {stage === "answer" && shuffledWords.length > 0 && (
           <div style={{ textAlign: "center" }}>
             <p style={{ fontSize: "100px", marginBottom: "20px" }}>
-              {mockWords[currentWordIndex].korean}
+              {shuffledWords[currentWordIndex].korean}
             </p>
             <p style={{ fontSize: "60px" }}>
-              {mockWords[currentWordIndex].english}
+              {shuffledWords[currentWordIndex].english}
             </p>
           </div>
         )}

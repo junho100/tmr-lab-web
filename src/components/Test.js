@@ -10,6 +10,13 @@ const Test = () => {
   const [userInput, setUserInput] = useState("");
   const [results, setResults] = useState([]);
   const [timeLeft, setTimeLeft] = useState(7);
+  const [shuffledWords, setShuffledWords] = useState([]);
+
+  // 단어 배열 섞기
+  useEffect(() => {
+    const shuffled = [...mockWords].sort(() => Math.random() - 0.5);
+    setShuffledWords(shuffled);
+  }, []);
 
   // 스페이스바 이벤트 핸들러 수정
   useEffect(() => {
@@ -32,11 +39,11 @@ const Test = () => {
   useEffect(() => {
     if (stage === "question") {
       setTimeout(() => {
-        const audio = new Audio(mockWords[currentWordIndex].audioUrl);
+        const audio = new Audio(shuffledWords[currentWordIndex].audioUrl);
         audio.play();
       }, 500);
     }
-  }, [stage, currentWordIndex]);
+  }, [stage, currentWordIndex, shuffledWords]);
 
   // 새로고침 방지 기능 추가
   useEffect(() => {
@@ -89,11 +96,11 @@ const Test = () => {
 
   const handleNextWord = () => {
     // 마지막 단어인 경우
-    if (currentWordIndex === mockWords.length - 1) {
+    if (currentWordIndex === shuffledWords.length - 1) {
       const finalResults = [
         ...results,
         {
-          word: mockWords[currentWordIndex].english,
+          word: shuffledWords[currentWordIndex].english,
           written_word: userInput,
         },
       ];
@@ -105,7 +112,7 @@ const Test = () => {
     setResults((prev) => [
       ...prev,
       {
-        word: mockWords[currentWordIndex].english,
+        word: shuffledWords[currentWordIndex].english,
         written_word: userInput,
       },
     ]);
@@ -183,12 +190,12 @@ const Test = () => {
           cursor: "pointer",
         }}
       >
-        {currentWordIndex === mockWords.length - 1 ? "시험 종료" : "다음"}
+        {currentWordIndex === shuffledWords.length - 1 ? "시험 종료" : "다음"}
       </button>
     </div>
   );
 
-  const progress = ((currentWordIndex + 1) / mockWords.length) * 100;
+  const progress = ((currentWordIndex + 1) / shuffledWords.length) * 100;
 
   return (
     <div
@@ -220,7 +227,7 @@ const Test = () => {
             />
           </div>
           <p style={{ textAlign: "center" }}>
-            {currentWordIndex + 1} / {mockWords.length}
+            {currentWordIndex + 1} / {shuffledWords.length}
           </p>
         </div>
       )}
@@ -272,7 +279,9 @@ const Test = () => {
           </div>
         )}
 
-        {stage === "question" && renderQuestionStage()}
+        {stage === "question" &&
+          shuffledWords.length > 0 &&
+          renderQuestionStage()}
       </div>
     </div>
   );

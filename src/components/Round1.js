@@ -11,13 +11,20 @@ const Round1 = () => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(7);
   const [userInput, setUserInput] = useState("");
+  const [shuffledWords, setShuffledWords] = useState([]);
+
+  // 단어 배열 섞기
+  useEffect(() => {
+    const shuffled = [...mockWords].sort(() => Math.random() - 0.5);
+    setShuffledWords(shuffled);
+  }, []);
 
   // playAudio 함수 유지
   const playAudio = async () => {
     try {
       audio.pause();
       audio.currentTime = 0;
-      audio.src = mockWords[currentWordIndex].audioUrl;
+      audio.src = shuffledWords[currentWordIndex].audioUrl;
 
       await new Promise((resolve) => {
         audio.oncanplaythrough = resolve;
@@ -59,7 +66,7 @@ const Round1 = () => {
       }, 1000);
 
       timer = setTimeout(() => {
-        if (currentWordIndex < mockWords.length - 1) {
+        if (currentWordIndex < shuffledWords.length - 1) {
           setStage("cross");
           setCurrentWordIndex((prev) => prev + 1);
 
@@ -77,7 +84,7 @@ const Round1 = () => {
         clearTimeout(timer);
       };
     }
-  }, [stage, currentWordIndex]);
+  }, [stage, currentWordIndex, shuffledWords.length]);
 
   // 스페이스바 이벤트 핸들러
   useEffect(() => {
@@ -115,7 +122,7 @@ const Round1 = () => {
   };
 
   const handleSubmit = () => {
-    if (currentWordIndex < mockWords.length - 1) {
+    if (currentWordIndex < shuffledWords.length - 1) {
       setStage("cross");
       setCurrentWordIndex((prev) => prev + 1);
       setTimeout(() => {
@@ -127,7 +134,7 @@ const Round1 = () => {
     }
   };
 
-  const progress = ((currentWordIndex + 1) / mockWords.length) * 100;
+  const progress = ((currentWordIndex + 1) / shuffledWords.length) * 100;
 
   return (
     <div
@@ -159,7 +166,7 @@ const Round1 = () => {
             />
           </div>
           <p style={{ textAlign: "center" }}>
-            {currentWordIndex + 1} / {mockWords.length}
+            {currentWordIndex + 1} / {shuffledWords.length}
           </p>
         </div>
       )}
@@ -220,13 +227,13 @@ const Round1 = () => {
           </div>
         )}
 
-        {stage === "word" && (
+        {stage === "word" && shuffledWords.length > 0 && (
           <div style={{ textAlign: "center" }}>
             <p style={{ fontSize: "100px", marginBottom: "20px" }}>
-              {mockWords[currentWordIndex].korean}
+              {shuffledWords[currentWordIndex].korean}
             </p>
             <p style={{ fontSize: "60px", marginBottom: "20px" }}>
-              {mockWords[currentWordIndex].english}
+              {shuffledWords[currentWordIndex].english}
             </p>
             <input
               type="text"
