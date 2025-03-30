@@ -1,11 +1,6 @@
 export const mockWords = [
   {
-    korean: "참",
-    english: "abide",
-    audioUrl: `${process.env.PUBLIC_URL}/abide.mp3`,
-  },
-  {
-    korean: "감각",
+    korean: "통찰력",
     english: "acumen",
     audioUrl: `${process.env.PUBLIC_URL}/acumen.mp3`,
   },
@@ -20,9 +15,14 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/ailment.mp3`,
   },
   {
-    korean: "냉담",
-    english: "aloof",
-    audioUrl: `${process.env.PUBLIC_URL}/aloof.mp3`,
+    korean: "민첩함",
+    english: "alacrity",
+    audioUrl: `${process.env.PUBLIC_URL}/alacrity.mp3`,
+  },
+  {
+    korean: "합금",
+    english: "alloy",
+    audioUrl: `${process.env.PUBLIC_URL}/alloy.mp3`,
   },
   {
     korean: "찬장",
@@ -30,24 +30,9 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/ambry.mp3`,
   },
   {
-    korean: "해독제",
-    english: "antidote",
-    audioUrl: `${process.env.PUBLIC_URL}/antidote.mp3`,
-  },
-  {
-    korean: "반대",
-    english: "antithesis",
-    audioUrl: `${process.env.PUBLIC_URL}/antithesis.mp3`,
-  },
-  {
-    korean: "빨리",
-    english: "apace",
-    audioUrl: `${process.env.PUBLIC_URL}/apace.mp3`,
-  },
-  {
-    korean: "정점",
-    english: "apex",
-    audioUrl: `${process.env.PUBLIC_URL}/apex.mp3`,
+    korean: "변칙",
+    english: "anomaly",
+    audioUrl: `${process.env.PUBLIC_URL}/anomaly.mp3`,
   },
   {
     korean: "견습생",
@@ -55,14 +40,19 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/apprentice.mp3`,
   },
   {
+    korean: "원조, 후원",
+    english: "auspices",
+    audioUrl: `${process.env.PUBLIC_URL}/auspices.mp3`,
+  },
+  {
+    korean: "공리",
+    english: "axiom",
+    audioUrl: `${process.env.PUBLIC_URL}/axiom.mp3`,
+  },
+  {
     korean: "재앙",
     english: "bane",
     audioUrl: `${process.env.PUBLIC_URL}/bane.mp3`,
-  },
-  {
-    korean: "폭음",
-    english: "binge",
-    audioUrl: `${process.env.PUBLIC_URL}/binge.mp3`,
   },
   {
     korean: "물집",
@@ -80,16 +70,6 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/bribery.mp3`,
   },
   {
-    korean: "직전",
-    english: "brink",
-    audioUrl: `${process.env.PUBLIC_URL}/brink.mp3`,
-  },
-  {
-    korean: "큰 부담",
-    english: "brunt",
-    audioUrl: `${process.env.PUBLIC_URL}/brunt.mp3`,
-  },
-  {
     korean: "소음",
     english: "cacophony",
     audioUrl: `${process.env.PUBLIC_URL}/cacophony.mp3`,
@@ -100,22 +80,27 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/caprice.mp3`,
   },
   {
-    korean: "장관",
+    korean: "총리",
     english: "chancellor",
     audioUrl: `${process.env.PUBLIC_URL}/chancellor.mp3`,
   },
   {
-    korean: "깊은 틈",
+    korean: "사기꾼",
+    english: "charlatan",
+    audioUrl: `${process.env.PUBLIC_URL}/charlatan.mp3`,
+  },
+  {
+    korean: "넓은 틈",
     english: "chasm",
     audioUrl: `${process.env.PUBLIC_URL}/chasm.mp3`,
   },
   {
-    korean: "관",
+    korean: "(머리에 쓰는) 관",
     english: "circlet",
     audioUrl: `${process.env.PUBLIC_URL}/circlet.mp3`,
   },
   {
-    korean: "잡기",
+    korean: "걸쇠",
     english: "clasp",
     audioUrl: `${process.env.PUBLIC_URL}/clasp.mp3`,
   },
@@ -135,6 +120,11 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/contusion.mp3`,
   },
   {
+    korean: "예의",
+    english: "courtesy",
+    audioUrl: `${process.env.PUBLIC_URL}/courtesy.mp3`,
+  },
+  {
     korean: "문장",
     english: "crest",
     audioUrl: `${process.env.PUBLIC_URL}/crest.mp3`,
@@ -143,6 +133,11 @@ export const mockWords = [
     korean: "부족",
     english: "dearth",
     audioUrl: `${process.env.PUBLIC_URL}/dearth.mp3`,
+  },
+  {
+    korean: "대리인",
+    english: "delegate",
+    audioUrl: `${process.env.PUBLIC_URL}/delegate.mp3`,
   },
   {
     korean: "골짜기",
@@ -160,19 +155,24 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/discretion.mp3`,
   },
   {
+    korean: "석방",
+    english: "emancipation",
+    audioUrl: `${process.env.PUBLIC_URL}/emancipation.mp3`,
+  },
+  {
     korean: "침착",
     english: "equanimity",
     audioUrl: `${process.env.PUBLIC_URL}/equanimity.mp3`,
   },
   {
-    korean: "파벌",
-    english: "faction",
-    audioUrl: `${process.env.PUBLIC_URL}/faction.mp3`,
+    korean: "발췌",
+    english: "excerpt",
+    audioUrl: `${process.env.PUBLIC_URL}/excerpt.mp3`,
   },
   {
-    korean: "난로망",
-    english: "fender",
-    audioUrl: `${process.env.PUBLIC_URL}/fender.mp3`,
+    korean: "발열",
+    english: "febris",
+    audioUrl: `${process.env.PUBLIC_URL}/febris.mp3`,
   },
   {
     korean: "관용",
@@ -185,14 +185,14 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/fortnight.mp3`,
   },
   {
-    korean: "잎",
-    english: "frond",
-    audioUrl: `${process.env.PUBLIC_URL}/frond.mp3`,
-  },
-  {
     korean: "가장자리",
     english: "fringe",
     audioUrl: `${process.env.PUBLIC_URL}/fringe.mp3`,
+  },
+  {
+    korean: "작업복",
+    english: "frock",
+    audioUrl: `${process.env.PUBLIC_URL}/frock.mp3`,
   },
   {
     korean: "교수대",
@@ -200,14 +200,19 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/gallows.mp3`,
   },
   {
+    korean: "요지",
+    english: "gist",
+    audioUrl: `${process.env.PUBLIC_URL}/gist.mp3`,
+  },
+  {
     korean: "협곡",
     english: "gorge",
     audioUrl: `${process.env.PUBLIC_URL}/gorge.mp3`,
   },
   {
-    korean: "작은 숲",
-    english: "grove",
-    audioUrl: `${process.env.PUBLIC_URL}/grove.mp3`,
+    korean: "열정",
+    english: "gusto",
+    audioUrl: `${process.env.PUBLIC_URL}/gusto.mp3`,
   },
   {
     korean: "조짐",
@@ -215,12 +220,17 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/harbinger.mp3`,
   },
   {
-    korean: "무게",
+    korean: "묵직함",
     english: "heft",
     audioUrl: `${process.env.PUBLIC_URL}/heft.mp3`,
   },
   {
-    korean: "축적",
+    korean: "은둔자",
+    english: "hermit",
+    audioUrl: `${process.env.PUBLIC_URL}/hermit.mp3`,
+  },
+  {
+    korean: "저장물",
     english: "hoard",
     audioUrl: `${process.env.PUBLIC_URL}/hoard.mp3`,
   },
@@ -230,9 +240,14 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/hubris.mp3`,
   },
   {
-    korean: "우상 파괴자",
+    korean: "우상파괴자",
     english: "iconoclast",
     audioUrl: `${process.env.PUBLIC_URL}/iconoclast.mp3`,
+  },
+  {
+    korean: "욕설",
+    english: "imprecation",
+    audioUrl: `${process.env.PUBLIC_URL}/imprecation.mp3`,
   },
   {
     korean: "취임식",
@@ -240,9 +255,14 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/inauguration.mp3`,
   },
   {
-    korean: "경고",
+    korean: "명령",
     english: "injunction",
     audioUrl: `${process.env.PUBLIC_URL}/injunction.mp3`,
+  },
+  {
+    korean: "범람",
+    english: "inundation",
+    audioUrl: `${process.env.PUBLIC_URL}/inundation.mp3`,
   },
   {
     korean: "농담",
@@ -250,12 +270,7 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/jest.mp3`,
   },
   {
-    korean: "대형 버스",
-    english: "juggernaut",
-    audioUrl: `${process.env.PUBLIC_URL}/juggernaut.mp3`,
-  },
-  {
-    korean: "재능",
+    korean: "요령",
     english: "knack",
     audioUrl: `${process.env.PUBLIC_URL}/knack.mp3`,
   },
@@ -275,29 +290,24 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/larceny.mp3`,
   },
   {
-    korean: "집착",
-    english: "limerance",
-    audioUrl: `${process.env.PUBLIC_URL}/limerance.mp3`,
+    korean: "선반",
+    english: "ledge",
+    audioUrl: `${process.env.PUBLIC_URL}/ledge.mp3`,
   },
   {
-    korean: "소송 당사자",
-    english: "litigant",
-    audioUrl: `${process.env.PUBLIC_URL}/litigant.mp3`,
+    korean: "연락 담당자",
+    english: "liaison",
+    audioUrl: `${process.env.PUBLIC_URL}/liaison.mp3`,
+  },
+  {
+    korean: "소송인",
+    english: "litigator",
+    audioUrl: `${process.env.PUBLIC_URL}/litigator.mp3`,
   },
   {
     korean: "전설",
     english: "lore",
     audioUrl: `${process.env.PUBLIC_URL}/lore.mp3`,
-  },
-  {
-    korean: "대혼란",
-    english: "maelstrom",
-    audioUrl: `${process.env.PUBLIC_URL}/maelstrom.mp3`,
-  },
-  {
-    korean: "개성 강한 사람",
-    english: "maverick",
-    audioUrl: `${process.env.PUBLIC_URL}/maverick.mp3`,
   },
   {
     korean: "환경",
@@ -315,44 +325,44 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/morass.mp3`,
   },
   {
-    korean: "최악",
-    english: "nadir",
-    audioUrl: `${process.env.PUBLIC_URL}/nadir.mp3`,
-  },
-  {
     korean: "초보자",
     english: "neophyte",
     audioUrl: `${process.env.PUBLIC_URL}/neophyte.mp3`,
   },
   {
-    korean: "곳",
-    english: "nook",
-    audioUrl: `${process.env.PUBLIC_URL}/nook.mp3`,
+    korean: "부고(사망 기사)",
+    english: "obituary",
+    audioUrl: `${process.env.PUBLIC_URL}/obituary.mp3`,
   },
   {
-    korean: "외면",
+    korean: "시련",
+    english: "ordeal",
+    audioUrl: `${process.env.PUBLIC_URL}/ordeal.mp3`,
+  },
+  {
+    korean: "연설가",
+    english: "orator",
+    audioUrl: `${process.env.PUBLIC_URL}/orator.mp3`,
+  },
+  {
+    korean: "추방",
     english: "ostracism",
     audioUrl: `${process.env.PUBLIC_URL}/ostracism.mp3`,
   },
   {
-    korean: "낡은",
-    english: "outworn",
-    audioUrl: `${process.env.PUBLIC_URL}/outworn.mp3`,
+    korean: "박수",
+    english: "ovation",
+    audioUrl: `${process.env.PUBLIC_URL}/ovation.mp3`,
   },
   {
-    korean: "창백한",
-    english: "pallid",
-    audioUrl: `${process.env.PUBLIC_URL}/pallid.mp3`,
+    korean: "계약",
+    english: "pact",
+    audioUrl: `${process.env.PUBLIC_URL}/pact.mp3`,
   },
   {
-    korean: "만병 통치약",
+    korean: "만병통치약",
     english: "panacea",
     audioUrl: `${process.env.PUBLIC_URL}/panacea.mp3`,
-  },
-  {
-    korean: "부랑자",
-    english: "pariah",
-    audioUrl: `${process.env.PUBLIC_URL}/pariah.mp3`,
   },
   {
     korean: "정수리",
@@ -360,14 +370,9 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/pate.mp3`,
   },
   {
-    korean: "소량",
+    korean: "결핍",
     english: "paucity",
     audioUrl: `${process.env.PUBLIC_URL}/paucity.mp3`,
-  },
-  {
-    korean: "잠깐",
-    english: "pax",
-    audioUrl: `${process.env.PUBLIC_URL}/pax.mp3`,
   },
   {
     korean: "애호",
@@ -375,24 +380,29 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/penchant.mp3`,
   },
   {
+    korean: "참회",
+    english: "penance",
+    audioUrl: `${process.env.PUBLIC_URL}/penance.mp3`,
+  },
+  {
     korean: "배신",
     english: "perfidy",
     audioUrl: `${process.env.PUBLIC_URL}/perfidy.mp3`,
   },
   {
-    korean: "퇴직금",
-    english: "pension",
-    audioUrl: `${process.env.PUBLIC_URL}/pension.mp3`,
+    korean: "흙냄새",
+    english: "petrichor",
+    audioUrl: `${process.env.PUBLIC_URL}/petrichor.mp3`,
+  },
+  {
+    korean: "아주 적은 돈",
+    english: "pittance",
+    audioUrl: `${process.env.PUBLIC_URL}/pittance.mp3`,
   },
   {
     korean: "과잉",
     english: "plethora",
     audioUrl: `${process.env.PUBLIC_URL}/plethora.mp3`,
-  },
-  {
-    korean: "깃털",
-    english: "plume",
-    audioUrl: `${process.env.PUBLIC_URL}/plume.mp3`,
   },
   {
     korean: "전조",
@@ -403,6 +413,21 @@ export const mockWords = [
     korean: "정직",
     english: "probity",
     audioUrl: `${process.env.PUBLIC_URL}/probity.mp3`,
+  },
+  {
+    korean: "예후",
+    english: "prognosis",
+    audioUrl: `${process.env.PUBLIC_URL}/prognosis.mp3`,
+  },
+  {
+    korean: "산책",
+    english: "promenade",
+    audioUrl: `${process.env.PUBLIC_URL}/promenade.mp3`,
+  },
+  {
+    korean: "후배",
+    english: "protege",
+    audioUrl: `${process.env.PUBLIC_URL}/protege.mp3`,
   },
   {
     korean: "전문가",
@@ -430,19 +455,29 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/rancor.mp3`,
   },
   {
+    korean: "나머지",
+    english: "remnant",
+    audioUrl: `${process.env.PUBLIC_URL}/remnant.mp3`,
+  },
+  {
     korean: "유예",
     english: "reprieve",
     audioUrl: `${process.env.PUBLIC_URL}/reprieve.mp3`,
   },
   {
-    korean: "철저함",
-    english: "rigor",
-    audioUrl: `${process.env.PUBLIC_URL}/rigor.mp3`,
-  },
-  {
     korean: "외관",
     english: "semblance",
     audioUrl: `${process.env.PUBLIC_URL}/semblance.mp3`,
+  },
+  {
+    korean: "조각",
+    english: "shard",
+    audioUrl: `${process.env.PUBLIC_URL}/shard.mp3`,
+  },
+  {
+    korean: "장난",
+    english: "shenanigan",
+    audioUrl: `${process.env.PUBLIC_URL}/shenanigan.mp3`,
   },
   {
     korean: "정강이",
@@ -455,24 +490,9 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/shrine.mp3`,
   },
   {
-    korean: "관목",
-    english: "shrub",
-    audioUrl: `${process.env.PUBLIC_URL}/shrub.mp3`,
-  },
-  {
-    korean: "목록",
+    korean: "명단",
     english: "slate",
     audioUrl: `${process.env.PUBLIC_URL}/slate.mp3`,
-  },
-  {
-    korean: "맨정신",
-    english: "sobriety",
-    audioUrl: `${process.env.PUBLIC_URL}/sobriety.mp3`,
-  },
-  {
-    korean: "빈발",
-    english: "spate",
-    audioUrl: `${process.env.PUBLIC_URL}/spate.mp3`,
   },
   {
     korean: "얼룩",
@@ -483,11 +503,6 @@ export const mockWords = [
     korean: "흥청망청",
     english: "spree",
     audioUrl: `${process.env.PUBLIC_URL}/spree.mp3`,
-  },
-  {
-    korean: "분출",
-    english: "spurt",
-    audioUrl: `${process.env.PUBLIC_URL}/spurt.mp3`,
   },
   {
     korean: "속임수",
@@ -515,37 +530,27 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/tenant.mp3`,
   },
   {
-    korean: "유언, 증거",
+    korean: "증거",
     english: "testament",
     audioUrl: `${process.env.PUBLIC_URL}/testament.mp3`,
   },
   {
-    korean: "고동",
+    korean: "지끈거림",
     english: "throb",
     audioUrl: `${process.env.PUBLIC_URL}/throb.mp3`,
   },
   {
-    korean: "모방",
+    korean: "궤도",
+    english: "trajectory",
+    audioUrl: `${process.env.PUBLIC_URL}/trajectory.mp3`,
+  },
+  {
+    korean: "왜곡",
     english: "travesty",
     audioUrl: `${process.env.PUBLIC_URL}/travesty.mp3`,
   },
   {
-    korean: "기만",
-    english: "treachery",
-    audioUrl: `${process.env.PUBLIC_URL}/treachery.mp3`,
-  },
-  {
-    korean: "보물",
-    english: "trove",
-    audioUrl: `${process.env.PUBLIC_URL}/trove.mp3`,
-  },
-  {
-    korean: "휴전",
-    english: "truce",
-    audioUrl: `${process.env.PUBLIC_URL}/truce.mp3`,
-  },
-  {
-    korean: "불쾌",
+    korean: "불쾌감",
     english: "umbrage",
     audioUrl: `${process.env.PUBLIC_URL}/umbrage.mp3`,
   },
@@ -555,19 +560,19 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/upshot.mp3`,
   },
   {
+    korean: "방랑자",
+    english: "vagabond",
+    audioUrl: `${process.env.PUBLIC_URL}/vagabond.mp3`,
+  },
+  {
+    korean: "부패",
+    english: "venality",
+    audioUrl: `${process.env.PUBLIC_URL}/venality.mp3`,
+  },
+  {
     korean: "진실성",
     english: "veracity",
     audioUrl: `${process.env.PUBLIC_URL}/veracity.mp3`,
-  },
-  {
-    korean: "가장자리",
-    english: "verge",
-    audioUrl: `${process.env.PUBLIC_URL}/verge.mp3`,
-  },
-  {
-    korean: "삽화",
-    english: "vignette",
-    audioUrl: `${process.env.PUBLIC_URL}/vignette.mp3`,
   },
   {
     korean: "경치",
@@ -575,22 +580,17 @@ export const mockWords = [
     audioUrl: `${process.env.PUBLIC_URL}/vista.mp3`,
   },
   {
-    korean: "약화",
-    english: "wane",
-    audioUrl: `${process.env.PUBLIC_URL}/wane.mp3`,
+    korean: "관리인",
+    english: "warden",
+    audioUrl: `${process.env.PUBLIC_URL}/warden.mp3`,
   },
   {
-    korean: "변덕",
-    english: "whim",
-    audioUrl: `${process.env.PUBLIC_URL}/whim.mp3`,
+    korean: "겁쟁이",
+    english: "wimp",
+    audioUrl: `${process.env.PUBLIC_URL}/wimp.mp3`,
   },
   {
-    korean: "재치",
-    english: "wit",
-    audioUrl: `${process.env.PUBLIC_URL}/wit.mp3`,
-  },
-  {
-    korean: "천정",
+    korean: "정점",
     english: "zenith",
     audioUrl: `${process.env.PUBLIC_URL}/zenith.mp3`,
   },
