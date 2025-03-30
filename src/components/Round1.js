@@ -225,6 +225,9 @@ const Round1 = () => {
             <p style={{ fontSize: "100px", marginBottom: "20px" }}>
               {mockWords[currentWordIndex].korean}
             </p>
+            <p style={{ fontSize: "60px", marginBottom: "20px" }}>
+              {mockWords[currentWordIndex].english}
+            </p>
             <input
               type="text"
               value={userInput}

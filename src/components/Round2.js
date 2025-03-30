@@ -259,8 +259,11 @@ const Round2 = () => {
 
         {stage === "answer" && (
           <div style={{ textAlign: "center" }}>
-            <p style={{ fontSize: "100px" }}>
+            <p style={{ fontSize: "100px", marginBottom: "20px" }}>
               {mockWords[currentWordIndex].korean}
+            </p>
+            <p style={{ fontSize: "60px" }}>
+              {mockWords[currentWordIndex].english}
             </p>
           </div>
         )}

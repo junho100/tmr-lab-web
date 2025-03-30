@@ -109,6 +109,7 @@ const PreRound1 = () => {
       {stage === "word" && (
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: "100px", marginBottom: "20px" }}>사과</p>
+          <p style={{ fontSize: "60px", marginBottom: "20px" }}>apple</p>
           <input
             type="text"
             value={userInput}
