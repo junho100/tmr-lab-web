@@ -33,7 +33,7 @@ const PreRound1 = () => {
 
       // 오디오 재생
       const audio = new Audio(
-        "https://papago.naver.com/apis/tts/c_lt_clara_2.2.30.0.3.32_164-nvoice_clara_2.2.30.0.3.32_91a33ac6b0a7c4f551f8d6edb2db5039-1727670602445.mp3"
+        "https://papago.naver.com/apis/tts/c_lt_yuri_2.4.1.0.3.40_4-nvoice_yuri_2.4.1.0.3.40_ab9425494a7d82889f4ac1d95fbd3cb6-1747310323984"
       );
       audio.play();
 
@@ -109,7 +109,7 @@ const PreRound1 = () => {
       )}
       {stage === "word" && (
         <div style={{ textAlign: "center" }}>
-          <p style={{ fontSize: "100px", marginBottom: "20px" }}>사과</p>
+          <p style={{ fontSize: "100px", marginBottom: "20px" }}>친구</p>
           <input
             type="text"
             value={userInput}
