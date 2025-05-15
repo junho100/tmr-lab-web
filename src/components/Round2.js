@@ -247,9 +247,6 @@ const Round2 = () => {
             <p style={{ fontSize: "100px", marginBottom: "20px" }}>
               {shuffledWords[currentWordIndex].korean}
             </p>
-            <p style={{ fontSize: "60px" }}>
-              {shuffledWords[currentWordIndex].english}
-            </p>
           </div>
         )}
 

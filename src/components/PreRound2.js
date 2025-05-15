@@ -141,7 +141,6 @@ const PreRound2 = () => {
       {stage === "answer" && (
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: "100px", marginBottom: "20px" }}>사과</p>
-          <p style={{ fontSize: "60px" }}>apple</p>
         </div>
       )}
     </div>

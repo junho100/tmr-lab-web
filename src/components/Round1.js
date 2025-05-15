@@ -223,9 +223,6 @@ const Round1 = () => {
             <p style={{ fontSize: "100px", marginBottom: "20px" }}>
               {shuffledWords[currentWordIndex].korean}
             </p>
-            <p style={{ fontSize: "60px", marginBottom: "20px" }}>
-              {shuffledWords[currentWordIndex].english}
-            </p>
             <input
               type="text"
               value={userInput}
