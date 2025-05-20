@@ -31,12 +31,12 @@ export const mockWords = [
   },
   {
     korean: "공항",
-    english: "kuko",
+    english: "kukou",
     audioUrl: `${process.env.PUBLIC_URL}/kuko.mp3`,
   },
   {
     korean: "교실",
-    english: "kyoshitsu",
+    english: "kyoushitsu",
     audioUrl: `${process.env.PUBLIC_URL}/kyoshitsu.mp3`,
   },
   {
@@ -56,7 +56,7 @@ export const mockWords = [
   },
   {
     korean: "사고 (생각)",
-    english: "shiko",
+    english: "shikou",
     audioUrl: `${process.env.PUBLIC_URL}/shiko.mp3`,
   },
   {
@@ -81,7 +81,7 @@ export const mockWords = [
   },
   {
     korean: "부장",
-    english: "bucho",
+    english: "buchou",
     audioUrl: `${process.env.PUBLIC_URL}/bucho.mp3`,
   },
   {
@@ -96,7 +96,7 @@ export const mockWords = [
   },
   {
     korean: "부동산",
-    english: "fudosan",
+    english: "fudousan",
     audioUrl: `${process.env.PUBLIC_URL}/fudosan.mp3`,
   },
   {
@@ -106,7 +106,7 @@ export const mockWords = [
   },
   {
     korean: "공부",
-    english: "benkyo",
+    english: "benkyou",
     audioUrl: `${process.env.PUBLIC_URL}/benkyo.mp3`,
   },
   {
@@ -121,7 +121,7 @@ export const mockWords = [
   },
   {
     korean: "희망",
-    english: "kibo",
+    english: "kibou",
     audioUrl: `${process.env.PUBLIC_URL}/kibo.mp3`,
   },
   {
@@ -141,12 +141,12 @@ export const mockWords = [
   },
   {
     korean: "감동",
-    english: "kando",
+    english: "kandou",
     audioUrl: `${process.env.PUBLIC_URL}/kando.mp3`,
   },
   {
     korean: "자료",
-    english: "shiryo",
+    english: "shiryou",
     audioUrl: `${process.env.PUBLIC_URL}/shiryo.mp3`,
   },
   {
@@ -166,7 +166,7 @@ export const mockWords = [
   },
   {
     korean: "교육",
-    english: "kyoiku",
+    english: "kyouiku",
     audioUrl: `${process.env.PUBLIC_URL}/kyoiku.mp3`,
   },
   {
@@ -206,7 +206,7 @@ export const mockWords = [
   },
   {
     korean: "상담",
-    english: "sodan",
+    english: "soudan",
     audioUrl: `${process.env.PUBLIC_URL}/sodan.mp3`,
   },
   {
@@ -221,7 +221,7 @@ export const mockWords = [
   },
   {
     korean: "현상",
-    english: "gensho",
+    english: "genshou",
     audioUrl: `${process.env.PUBLIC_URL}/gensho.mp3`,
   },
   {
@@ -231,12 +231,12 @@ export const mockWords = [
   },
   {
     korean: "능력",
-    english: "noryoku",
+    english: "nouryoku",
     audioUrl: `${process.env.PUBLIC_URL}/noryoku.mp3`,
   },
   {
     korean: "성공",
-    english: "seiko",
+    english: "seikou",
     audioUrl: `${process.env.PUBLIC_URL}/seiko.mp3`,
   },
   {
@@ -246,17 +246,17 @@ export const mockWords = [
   },
   {
     korean: "조사",
-    english: "chosa",
+    english: "chousa",
     audioUrl: `${process.env.PUBLIC_URL}/chosa.mp3`,
   },
   {
     korean: "이용",
-    english: "riyo",
+    english: "riyou",
     audioUrl: `${process.env.PUBLIC_URL}/riyo.mp3`,
   },
   {
     korean: "등록",
-    english: "toroku",
+    english: "touroku",
     audioUrl: `${process.env.PUBLIC_URL}/toroku.mp3`,
   },
   {
@@ -266,12 +266,12 @@ export const mockWords = [
   },
   {
     korean: "목표",
-    english: "mokuhyo",
-    audioUrl: `${process.env.PUBLIC_URL}/mokuhyo.mp3`,
+    english: "mokuhyou",
+    audioUrl: `${process.env.PUBLIC_URL}/mokuhyou.mp3`,
   },
   {
     korean: "경로",
-    english: "keiro",
+    english: "keirou",
     audioUrl: `${process.env.PUBLIC_URL}/keiro.mp3`,
   },
   {
@@ -301,7 +301,7 @@ export const mockWords = [
   },
   {
     korean: "자유",
-    english: "jiyu",
+    english: "jiyuu",
     audioUrl: `${process.env.PUBLIC_URL}/jiyu.mp3`,
   },
   {
@@ -326,13 +326,13 @@ export const mockWords = [
   },
   {
     korean: "내용",
-    english: "naiyo",
-    audioUrl: `${process.env.PUBLIC_URL}/naiyo.mp3`,
+    english: "naiyou",
+    audioUrl: `${process.env.PUBLIC_URL}/naiyou.mp3`,
   },
   {
     korean: "효과",
-    english: "koka",
-    audioUrl: `${process.env.PUBLIC_URL}/koka.mp3`,
+    english: "kouka",
+    audioUrl: `${process.env.PUBLIC_URL}/kouka.mp3`,
   },
   {
     korean: "제안",
@@ -341,18 +341,18 @@ export const mockWords = [
   },
   {
     korean: "구조",
-    english: "kozo",
-    audioUrl: `${process.env.PUBLIC_URL}/kozo.mp3`,
+    english: "kouzou",
+    audioUrl: `${process.env.PUBLIC_URL}/kouzou.mp3`,
   },
   {
     korean: "기능",
-    english: "kino",
-    audioUrl: `${process.env.PUBLIC_URL}/kino.mp3`,
+    english: "kinou",
+    audioUrl: `${process.env.PUBLIC_URL}/kinou.mp3`,
   },
   {
     korean: "인상",
-    english: "insho",
-    audioUrl: `${process.env.PUBLIC_URL}/insho.mp3`,
+    english: "inshou",
+    audioUrl: `${process.env.PUBLIC_URL}/inshou.mp3`,
   },
   {
     korean: "과거",
@@ -371,8 +371,8 @@ export const mockWords = [
   },
   {
     korean: "중점",
-    english: "juten",
-    audioUrl: `${process.env.PUBLIC_URL}/juten.mp3`,
+    english: "juuten",
+    audioUrl: `${process.env.PUBLIC_URL}/juuten.mp3`,
   },
   {
     korean: "선거",
@@ -391,13 +391,13 @@ export const mockWords = [
   },
   {
     korean: "긴장",
-    english: "kincho",
-    audioUrl: `${process.env.PUBLIC_URL}/kincho.mp3`,
+    english: "kinchou",
+    audioUrl: `${process.env.PUBLIC_URL}/kinchou.mp3`,
   },
   {
     korean: "지도",
-    english: "shido",
-    audioUrl: `${process.env.PUBLIC_URL}/shido.mp3`,
+    english: "shidou",
+    audioUrl: `${process.env.PUBLIC_URL}/shidou.mp3`,
   },
   {
     korean: "계산",
@@ -406,8 +406,8 @@ export const mockWords = [
   },
   {
     korean: "소비",
-    english: "shohi",
-    audioUrl: `${process.env.PUBLIC_URL}/shohi.mp3`,
+    english: "shouhi",
+    audioUrl: `${process.env.PUBLIC_URL}/shouhi.mp3`,
   },
   {
     korean: "보존",
@@ -416,13 +416,13 @@ export const mockWords = [
   },
   {
     korean: "고용",
-    english: "koyo",
-    audioUrl: `${process.env.PUBLIC_URL}/koyo.mp3`,
+    english: "koyou",
+    audioUrl: `${process.env.PUBLIC_URL}/koyou.mp3`,
   },
   {
     korean: "이동",
-    english: "ido",
-    audioUrl: `${process.env.PUBLIC_URL}/ido.mp3`,
+    english: "idou",
+    audioUrl: `${process.env.PUBLIC_URL}/idou.mp3`,
   },
   {
     korean: "기록",
@@ -431,13 +431,13 @@ export const mockWords = [
   },
   {
     korean: "승인",
-    english: "shonin",
-    audioUrl: `${process.env.PUBLIC_URL}/shonin.mp3`,
+    english: "shounin",
+    audioUrl: `${process.env.PUBLIC_URL}/shounin.mp3`,
   },
   {
     korean: "소개",
-    english: "shokai",
-    audioUrl: `${process.env.PUBLIC_URL}/shokai.mp3`,
+    english: "shoukai",
+    audioUrl: `${process.env.PUBLIC_URL}/shoukai.mp3`,
   },
   {
     korean: "판단",
@@ -456,8 +456,8 @@ export const mockWords = [
   },
   {
     korean: "검토",
-    english: "kento",
-    audioUrl: `${process.env.PUBLIC_URL}/kento.mp3`,
+    english: "kentou",
+    audioUrl: `${process.env.PUBLIC_URL}/kentou.mp3`,
   },
   {
     korean: "관리",
@@ -466,8 +466,8 @@ export const mockWords = [
   },
   {
     korean: "증가",
-    english: "zoka",
-    audioUrl: `${process.env.PUBLIC_URL}/zoka.mp3`,
+    english: "zouka",
+    audioUrl: `${process.env.PUBLIC_URL}/zouka.mp3`,
   },
   {
     korean: "감소",
@@ -491,8 +491,8 @@ export const mockWords = [
   },
   {
     korean: "능동",
-    english: "nudo",
-    audioUrl: `${process.env.PUBLIC_URL}/nudo.mp3`,
+    english: "nudou",
+    audioUrl: `${process.env.PUBLIC_URL}/nudou.mp3`,
   },
   {
     korean: "심사",
@@ -506,7 +506,7 @@ export const mockWords = [
   },
   {
     korean: "태도",
-    english: "taido",
+    english: "taidou",
     audioUrl: `${process.env.PUBLIC_URL}/taido.mp3`,
   },
   {
@@ -526,8 +526,8 @@ export const mockWords = [
   },
   {
     korean: "동향",
-    english: "douko",
-    audioUrl: `${process.env.PUBLIC_URL}/douko.mp3`,
+    english: "doukou",
+    audioUrl: `${process.env.PUBLIC_URL}/doukou.mp3`,
   },
   {
     korean: "제도",
@@ -536,13 +536,13 @@ export const mockWords = [
   },
   {
     korean: "우선",
-    english: "yusen",
-    audioUrl: `${process.env.PUBLIC_URL}/yusen.mp3`,
+    english: "yuusen",
+    audioUrl: `${process.env.PUBLIC_URL}/yuusen.mp3`,
   },
   {
     korean: "지표",
-    english: "shihyo",
-    audioUrl: `${process.env.PUBLIC_URL}/shihyo.mp3`,
+    english: "shihyou",
+    audioUrl: `${process.env.PUBLIC_URL}/shihyou.mp3`,
   },
   {
     korean: "납득",
@@ -581,8 +581,8 @@ export const mockWords = [
   },
   {
     korean: "소송",
-    english: "sosho",
-    audioUrl: `${process.env.PUBLIC_URL}/sosho.mp3`,
+    english: "soshou",
+    audioUrl: `${process.env.PUBLIC_URL}/soshou.mp3`,
   },
   {
     korean: "처분",
