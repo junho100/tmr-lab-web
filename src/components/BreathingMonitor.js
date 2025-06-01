@@ -106,6 +106,7 @@ const BreathingMonitor = () => {
   const API_CALL_INTERVAL = 100;
   const soundCueStartTimeRef = useRef(null);
   const DELAY_BEFORE_SOUND = 90 * 60 * 1000;
+  const breathingCycleCountRef = useRef(0); // 호흡 사이클 카운터
 
   useEffect(() => {
     // Load godirect library
@@ -162,6 +163,7 @@ const BreathingMonitor = () => {
     };
 
     fetchWords();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const connectDevice = async () => {
@@ -230,10 +232,10 @@ const BreathingMonitor = () => {
   // 피크 감지 함수
   const detectPeak = (data, currentValue) => {
     if (data.length < 4) return false;
-    
+
     const previousValue = data[data.length - 2].value;
     const beforePreviousValue = data[data.length - 3].value;
-    
+
     // 이전 값이 현재 값보다 크고, 이전 값이 그 이전 값보다 크면 피크로 간주
     return previousValue > currentValue && previousValue > beforePreviousValue;
   };
@@ -246,6 +248,7 @@ const BreathingMonitor = () => {
     setBreathingData([]); // 초기화
     thresholdRef.current = null;
     soundCueStartTimeRef.current = Date.now(); // 시작 시간 기록
+    breathingCycleCountRef.current = 0; // 카운터 초기화
 
     gdxDevice.enableDefaultSensors();
     gdxDevice.start(100); // 100ms sampling rate
@@ -262,52 +265,61 @@ const BreathingMonitor = () => {
         if (timestamp - lastApiCallTimeRef.current >= API_CALL_INTERVAL) {
           sendBreathingData(sensor.value);
           lastApiCallTimeRef.current = timestamp;
-          
+
           setBreathingData((prev) => {
             const newData = [...prev, newDataPoint].slice(-100);
-            
+
             // 충분한 데이터가 있는 경우에만 계산 수행
             if (newData.length < WINDOW_SIZE) return newData;
-            
+
             // 최근 데이터 윈도우
             const recentWindow = newData.slice(-WINDOW_SIZE);
-            
+
             // 윈도우 평균 계산
             const mean = calculateWindowMean(recentWindow);
-            
+
             // 역치 계산: 평균 * 팩터
             const newThreshold = mean * THRESHOLD_FACTOR;
             thresholdRef.current = newThreshold;
-            
+
             // 피크 감지
             if (detectPeak(newData, newDataPoint.value)) {
               const peakValue = prev[prev.length - 1]?.value;
-              
+
               // 피크가 역치를 초과하고 아직 사운드를 재생하지 않았으며 일정 시간이 지났을 때
               if (
-                timestamp - soundCueStartTimeRef.current >= DELAY_BEFORE_SOUND &&
+                timestamp - soundCueStartTimeRef.current >=
+                  DELAY_BEFORE_SOUND &&
                 peakValue > newThreshold &&
                 !hasPlayedAudioRef.current &&
                 timestamp - lastPlayTimeRef.current > 1000
               ) {
-                playNextWord();
-                lastPlayTimeRef.current = timestamp;
+                breathingCycleCountRef.current += 1; // 카운터 증가
+
+                // 2번에 한번만 재생
+                if (breathingCycleCountRef.current % 2 === 0) {
+                  playNextWord();
+                  lastPlayTimeRef.current = timestamp;
+                }
                 hasPlayedAudioRef.current = true;
               }
             } else if (newDataPoint.value < mean) {
               // 평균 이하로 내려가면 다음 피크에서 다시 소리를 재생할 수 있도록 함
               hasPlayedAudioRef.current = false;
             }
-            
+
             return newData;
           });
-          
+
           setBreathingStats((prev) => ({
             ...prev,
             currentValue: sensor.value,
             currentRate: calculateBreathingRate(breathingData),
             peakValue: Math.max(prev.peakValue, sensor.value),
-            valleyValue: Math.min(prev.valleyValue || sensor.value, sensor.value),
+            valleyValue: Math.min(
+              prev.valleyValue || sensor.value,
+              sensor.value
+            ),
             currentThreshold: thresholdRef.current || "계산 중...",
           }));
         }
@@ -366,6 +378,7 @@ const BreathingMonitor = () => {
     setIsCollecting(false);
     setGdxDevice(null);
     setBreathingData([]);
+    breathingCycleCountRef.current = 0;
     setBreathingStats({
       currentRate: 0,
       currentValue: 0,
@@ -557,9 +570,11 @@ const BreathingMonitor = () => {
         </StatCard>
         <StatCard>
           <h3>Current Threshold</h3>
-          <p>{typeof breathingStats.currentThreshold === 'number' 
-              ? breathingStats.currentThreshold.toFixed(2) 
-              : breathingStats.currentThreshold}</p>
+          <p>
+            {typeof breathingStats.currentThreshold === "number"
+              ? breathingStats.currentThreshold.toFixed(2)
+              : breathingStats.currentThreshold}
+          </p>
         </StatCard>
       </StatsPanel>
 
