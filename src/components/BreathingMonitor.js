@@ -80,6 +80,57 @@ const StatCard = styled.div`
   }
 `;
 
+// 에러 콘솔 스타일 추가
+const ErrorConsole = styled.div`
+  margin-top: 20px;
+  background-color: #1f2937;
+  border-radius: 8px;
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+`;
+
+const ConsoleHeader = styled.div`
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  margin-bottom: 12px;
+`;
+
+const ConsoleTitle = styled.h3`
+  color: #f9fafb;
+  font-size: 16px;
+  margin: 0;
+`;
+
+const ClearButton = styled.button`
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: auto;
+
+  &:hover {
+    background: #dc2626;
+  }
+`;
+
+const ConsoleContent = styled.div`
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  color: #f9fafb;
+  white-space: pre-wrap;
+  line-height: 1.4;
+`;
+
+const LogEntry = styled.div`
+  margin-bottom: 4px;
+  color: #fca5a5;
+`;
+
 const BreathingMonitor = () => {
   const [gdxDevice, setGdxDevice] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -87,6 +138,10 @@ const BreathingMonitor = () => {
   const [bluetoothSupported, setBluetoothSupported] = useState(true);
   const [libraryLoaded, setLibraryLoaded] = useState(false);
   const [breathingData, setBreathingData] = useState([]);
+
+  // 에러 콘솔 상태 추가
+  const [consoleLogs, setConsoleLogs] = useState([]);
+
   const audioElement = useRef(new Audio());
   const hasPlayedAudioRef = useRef(false);
   const thresholdRef = useRef(null);
@@ -107,6 +162,60 @@ const BreathingMonitor = () => {
   const soundCueStartTimeRef = useRef(null);
   const DELAY_BEFORE_SOUND = 90 * 60 * 1000;
   const breathingCycleCountRef = useRef(0); // 호흡 사이클 카운터
+
+  // 콘솔 로그 캡처 함수
+  const addConsoleLog = (type, message) => {
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = {
+      id: Date.now() + Math.random(),
+      type,
+      message,
+      timestamp,
+    };
+
+    setConsoleLogs((prev) => [...prev.slice(-49), logEntry]); // 최대 50개 로그 유지
+  };
+
+  // 콘솔 로그 클리어 함수
+  const clearConsoleLogs = () => {
+    setConsoleLogs([]);
+  };
+
+  // console.error와 전역 에러만 감지
+  useEffect(() => {
+    const originalConsoleError = console.error;
+
+    console.error = (...args) => {
+      originalConsoleError(...args);
+      addConsoleLog("error", args.join(" "));
+    };
+
+    // 전역 에러 캐처 추가
+    const handleError = (event) => {
+      addConsoleLog(
+        "error",
+        `Global Error: ${event.error?.message || event.message}`
+      );
+    };
+
+    const handleUnhandledRejection = (event) => {
+      addConsoleLog("error", `Unhandled Promise Rejection: ${event.reason}`);
+    };
+
+    window.addEventListener("error", handleError);
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+
+    return () => {
+      // 원래 콘솔 메서드 복원
+      console.error = originalConsoleError;
+
+      window.removeEventListener("error", handleError);
+      window.removeEventListener(
+        "unhandledrejection",
+        handleUnhandledRejection
+      );
+    };
+  }, []);
 
   useEffect(() => {
     // Load godirect library
@@ -169,6 +278,7 @@ const BreathingMonitor = () => {
   const connectDevice = async () => {
     try {
       if (!window.godirect) {
+        console.error("Go Direct library not loaded");
         throw new Error("Go Direct library not loaded");
       }
 
@@ -181,6 +291,7 @@ const BreathingMonitor = () => {
 
       // Check if browser supports Bluetooth
       if (!navigator.bluetooth) {
+        console.error("Bluetooth is not supported by this browser");
         throw new Error("Bluetooth is not supported by this browser");
       }
 
@@ -189,7 +300,7 @@ const BreathingMonitor = () => {
       setIsConnected(true);
 
       device.on("device-closed", () => {
-        console.log("Device closed event triggered");
+        console.error("Device closed event triggered");
         cleanupDevice();
       });
     } catch (err) {
@@ -241,7 +352,10 @@ const BreathingMonitor = () => {
   };
 
   const startCollection = () => {
-    if (!gdxDevice || !isConnected) return;
+    if (!gdxDevice || !isConnected) {
+      console.error("startCollection : Device not connected");
+      return;
+    }
 
     console.log("Starting collection...");
     setIsCollecting(true);
@@ -602,6 +716,25 @@ const BreathingMonitor = () => {
           </LineChart>
         </ResponsiveContainer>
       </div>
+
+      {/* 에러 콘솔 UI 추가 */}
+      <ErrorConsole>
+        <ConsoleHeader>
+          <ConsoleTitle>Debug Console</ConsoleTitle>
+          <ClearButton onClick={clearConsoleLogs}>Clear</ClearButton>
+        </ConsoleHeader>
+        <ConsoleContent>
+          {consoleLogs.length === 0 ? (
+            <div style={{ color: "#9ca3af" }}>No logs yet...</div>
+          ) : (
+            consoleLogs.map((log) => (
+              <LogEntry key={log.id}>
+                [{log.timestamp}] [ERROR] {log.message}
+              </LogEntry>
+            ))
+          )}
+        </ConsoleContent>
+      </ErrorConsole>
     </Container>
   );
 };
